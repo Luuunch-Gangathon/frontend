@@ -1,11 +1,13 @@
 # API Contract — Frontend ↔ Backend
 
-Source of truth for the HTTP surface between the Next.js frontend and the FastAPI backend. Frontend stub types live in `frontend/lib/types.ts` (auto-generated from Pydantic once `scripts/generate_ts_types.py` is wired up). Until then, the hand-written stubs in that file MUST match the shapes below.
+Source of truth for the HTTP surface between the Next.js frontend and the FastAPI backend.
+
+**Type flow:** Backend Pydantic models (`backend/app/schemas/`) are the source of truth. FastAPI publishes them at `/openapi.json`; the frontend runs `npm run gen:types` (wraps `openapi-typescript`) to regenerate `frontend/lib/types.generated.ts`. A hand-maintained facade `frontend/lib/types.ts` re-exports REST types with clean names and defines the SSE event block (which OpenAPI doesn't cover).
 
 **Base URL (dev):** `http://localhost:8000`
 **CORS:** backend must allow `http://localhost:3000`.
 **Transport:** JSON everywhere except `POST /chat` which is SSE (`text/event-stream`).
-**Errors:** non-2xx returns `{ detail: string }` or `{ error: string, code?: string }` — frontend surfaces both as `ApiError.body`.
+**Errors:** non-2xx returns `{ detail: string }` (FastAPI default) — frontend surfaces as `ApiError.body`.
 
 ---
 
@@ -109,7 +111,7 @@ Response: `Supplier[]` — ordered best-first.
 
 ## 4. Shared types
 
-All types are declared in `frontend/lib/types.ts` and should be mirrored 1:1 by Pydantic models in `backend/app/schemas/`.
+Declared once as Pydantic models in `backend/app/schemas/` and regenerated into the frontend via `npm run gen:types` (see the Type flow note at the top). The canonical shapes are listed below; backend is authoritative if they drift.
 
 ```ts
 type SourceType = 'internal_db' | 'web' | 'inferred' | 'scraped';
@@ -200,15 +202,16 @@ type ChatEvent =
 - **Nullability is explicit.** Optional fields are `?: T | null`, not `T | undefined`. Pydantic `Optional[T] = None` is the intended mirror.
 - **Dates are ISO-8601 strings** (we have none yet — flag if added).
 - **Confidence scores in `[0.0, 1.0]`.** Anything outside is a bug.
-- **Schema changes require a Slack ping.** `backend/app/schemas/` is shared. P5 re-runs `generate_ts_types.py` and commits `frontend/lib/types.ts`.
+- **Schema changes: backend-first.** Edit the Pydantic model in `backend/app/schemas/`, restart uvicorn, then the frontend runs `npm run gen:types` and commits the updated `frontend/lib/types.generated.ts`. Ping `#frontend` if the change is breaking.
 
 ---
 
-## 6. Open questions for the backend team
+## 6. Resolved decisions
 
-1. ID scheme — UUIDs, slugs (`ing_<name>`), or ints cast to strings? Pick one, document it.
-2. `Message` tool role — does it carry `tool_call_id`? Confirm OpenAI-style or custom.
-3. Error envelope — default FastAPI `{detail}`, or wrap as `{error, code}`?
-4. `ComplianceInput` — is `ingredient_id` the right key, or should it accept a raw name?
-5. Pagination — do we need `limit`/`offset` on `/ingredients`, `/consolidation-groups` at current data volume?
-6. Auth — confirmed no auth for the hackathon, no headers required?
+1. **ID scheme** — string slugs. Hand-authored fixtures use `ing_<n>`, `sup_<n>`, `co_<n>`, `cg_<n>`. Rows sourced from `data/db.sqlite` are namespaced with a `_db` infix (`ing_db_<n>`) so they never collide.
+2. **`Message.tool_call_id`** — OpenAI-style `Optional[str] = None`.
+3. **Error envelope** — FastAPI default `{ "detail": "..." }`. No custom wrapper.
+4. **`ComplianceInput`** — keys by `ingredient_id` (not raw name).
+5. **Pagination** — none. Data volume doesn't require it for the hackathon.
+6. **Auth** — none. No headers required.
+7. **`ComplianceResult.pass`** — wire key is `pass` (Python-reserved word). Backend aliases with `Field(alias="pass")` and serialises via `response_model_by_alias=True`.
