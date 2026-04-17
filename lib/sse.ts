@@ -1,12 +1,6 @@
-import type { EvidenceItem } from '@/lib/types';
+import type { ChatEvent } from '@/lib/types';
 
-export type ChatEvent =
-  | { type: 'text'; content: string }
-  | { type: 'tool_call'; name: string; args: unknown }
-  | { type: 'tool_result'; name: string; result: unknown }
-  | { type: 'evidence'; items: EvidenceItem[] }
-  | { type: 'trace'; agent?: string; step: string }
-  | { type: 'done' };
+export type { ChatEvent };
 
 export async function* parseSSE(
   stream: ReadableStream<Uint8Array>,

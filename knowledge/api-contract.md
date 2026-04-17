@@ -175,6 +175,21 @@ interface ChatRequest {
   messages: Message[];
   session_id: string;
 }
+
+interface TextEvent       { type: 'text';        content: string }
+interface ToolCallEvent   { type: 'tool_call';   name: string; args: unknown }
+interface ToolResultEvent { type: 'tool_result'; name: string; result: unknown }
+interface EvidenceEvent   { type: 'evidence';    items: EvidenceItem[] }
+interface TraceEvent      { type: 'trace';       agent?: string | null; step: string }
+interface DoneEvent       { type: 'done' }
+
+type ChatEvent =
+  | TextEvent
+  | ToolCallEvent
+  | ToolResultEvent
+  | EvidenceEvent
+  | TraceEvent
+  | DoneEvent;
 ```
 
 ---

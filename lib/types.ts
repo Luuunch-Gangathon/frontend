@@ -66,3 +66,43 @@ export interface ChatRequest {
   messages: Message[];
   session_id: string;
 }
+
+export interface TextEvent {
+  type: 'text';
+  content: string;
+}
+
+export interface ToolCallEvent {
+  type: 'tool_call';
+  name: string;
+  args: unknown;
+}
+
+export interface ToolResultEvent {
+  type: 'tool_result';
+  name: string;
+  result: unknown;
+}
+
+export interface EvidenceEvent {
+  type: 'evidence';
+  items: EvidenceItem[];
+}
+
+export interface TraceEvent {
+  type: 'trace';
+  agent?: string | null;
+  step: string;
+}
+
+export interface DoneEvent {
+  type: 'done';
+}
+
+export type ChatEvent =
+  | TextEvent
+  | ToolCallEvent
+  | ToolResultEvent
+  | EvidenceEvent
+  | TraceEvent
+  | DoneEvent;
