@@ -1,17 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  complianceCheck,
-  enrichIngredient,
-  getConsolidationGroup,
-  getIngredientSuppliers,
-  getIngredients,
-  listConsolidationGroups,
-  rankSuppliers,
-} from '@/lib/api';
+import { getIngredients } from '@/lib/api';
 import { API_BASE_URL } from '@/lib/env';
-import { useChatStream } from '@/hooks/useChatStream';
 
 type Status = 'idle' | 'loading' | 'ok' | 'error';
 
@@ -26,11 +17,9 @@ const INIT: Result = { label: '', status: 'idle', data: null, error: null };
 
 export default function Home() {
   const [result, setResult] = useState<Result>(INIT);
-  const chat = useChatStream();
 
   async function run(label: string, fn: () => Promise<unknown>) {
     setResult({ label, status: 'loading', data: null, error: null });
-    chat.reset();
     try {
       const data = await fn();
       setResult({ label, status: 'ok', data, error: null });
@@ -50,14 +39,6 @@ export default function Home() {
     return res.json();
   }
 
-  function sendChat() {
-    setResult({ label: 'POST /chat (SSE)', status: 'loading', data: null, error: null });
-    chat.send(
-      [{ role: 'user', content: 'Hello, give me a one-line status.' }],
-      `test-${Date.now()}`,
-    );
-  }
-
   const buttons: { label: string; onClick: () => void }[] = [
     { label: 'GET /health', onClick: () => run('GET /health', health) },
     { label: 'GET /ingredients', onClick: () => run('GET /ingredients', () => getIngredients()) },
@@ -68,54 +49,7 @@ export default function Home() {
           getIngredients({ name: 'lecithin', company_id: 'co_1' }),
         ),
     },
-    {
-      label: 'GET /ingredients/ing_1/suppliers',
-      onClick: () =>
-        run('GET /ingredients/ing_1/suppliers', () => getIngredientSuppliers('ing_1')),
-    },
-    {
-      label: 'GET /consolidation-groups',
-      onClick: () => run('GET /consolidation-groups', () => listConsolidationGroups()),
-    },
-    {
-      label: 'GET /consolidation-groups/cg_1',
-      onClick: () => run('GET /consolidation-groups/cg_1', () => getConsolidationGroup('cg_1')),
-    },
-    {
-      label: 'GET /enrich/lecithin',
-      onClick: () => run('GET /enrich/lecithin', () => enrichIngredient('lecithin')),
-    },
-    {
-      label: 'POST /compliance-check',
-      onClick: () =>
-        run('POST /compliance-check', () =>
-          complianceCheck({
-            ingredient_id: 'ing_1',
-            requirements: ['allergen-free', 'non-GMO'],
-          }),
-        ),
-    },
-    {
-      label: 'GET /suppliers/rank?ingredient_id=ing_1',
-      onClick: () =>
-        run('GET /suppliers/rank', () => rankSuppliers({ ingredient_id: 'ing_1' })),
-    },
-    { label: 'POST /chat (SSE)', onClick: sendChat },
   ];
-
-  const isChat = result.label === 'POST /chat (SSE)';
-  const displayStatus: Status = isChat
-    ? chat.status === 'streaming'
-      ? 'loading'
-      : chat.status === 'error'
-        ? 'error'
-        : chat.status === 'done'
-          ? 'ok'
-          : result.status
-    : result.status;
-
-  const displayData = isChat ? chat.events : result.data;
-  const displayError = isChat ? chat.error?.message ?? null : result.error;
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans dark:bg-black">
@@ -126,6 +60,9 @@ export default function Home() {
           </h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             Backend: <code className="font-mono">{API_BASE_URL}</code>
+          </p>
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
+            Template page — add a button here each time the backend team ships a new endpoint.
           </p>
         </header>
 
@@ -146,18 +83,18 @@ export default function Home() {
             <div className="text-sm text-zinc-600 dark:text-zinc-400">
               {result.label || 'No request yet'}
             </div>
-            <StatusBadge status={displayStatus} />
+            <StatusBadge status={result.status} />
           </div>
 
-          {displayError && (
+          {result.error && (
             <pre className="overflow-auto rounded bg-red-50 p-3 text-xs text-red-700 dark:bg-red-950 dark:text-red-300">
-              {displayError}
+              {result.error}
             </pre>
           )}
 
-          {displayData != null && (
+          {result.data != null && (
             <pre className="max-h-[60vh] overflow-auto rounded bg-zinc-50 p-3 text-xs text-zinc-900 dark:bg-black dark:text-zinc-100">
-              {JSON.stringify(displayData, null, 2)}
+              {JSON.stringify(result.data, null, 2)}
             </pre>
           )}
         </section>
