@@ -3,12 +3,12 @@ import { getProduct, getCompany } from "@/lib/api"
 import {
   getRawMaterialsForProduct,
   getSuppliersForRawMaterial,
+  type RawMaterial,
 } from "@/lib/demo-data"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { Section } from "@/components/blocks/section"
 import { DataTable } from "@/components/blocks/data-table"
-import type { RawMaterial } from "@/lib/types"
 
 export default async function ProductPage({
   params,
