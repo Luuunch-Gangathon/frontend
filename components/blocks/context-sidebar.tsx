@@ -484,11 +484,42 @@ function SubstitutesPanel({
     )
   }
 
+  const pending = candidates.filter((c) => {
+    const s = proposalStates.get(candidateKey(originalRmId, c.id))
+    return s == null || s.status === 'idle' || s.status === 'error'
+  })
+  const anyLoading = candidates.some((c) => {
+    const s = proposalStates.get(candidateKey(originalRmId, c.id))
+    return s?.status === 'loading'
+  })
+
+  const handleCheckAll = () => {
+    for (const c of pending) onFetchProposal(originalRmId, c.id)
+  }
+
   return (
     <div className="mx-2 mb-2 space-y-1.5 rounded-md border border-border bg-card p-2">
-      <p className="px-1 text-[10px] uppercase tracking-wide font-medium text-muted-foreground">
-        Substitute candidates
-      </p>
+      <div className="flex items-center justify-between gap-2 px-1">
+        <p className="text-[10px] uppercase tracking-wide font-medium text-muted-foreground">
+          Substitute candidates
+        </p>
+        {pending.length > 0 && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              handleCheckAll()
+            }}
+            disabled={anyLoading}
+            title={`Check compliance for ${pending.length} remaining candidate${pending.length === 1 ? '' : 's'}`}
+            className="shrink-0 inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary hover:bg-primary/10 transition-colors disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            <span>Check all</span>
+            <span aria-hidden>⚡</span>
+          </button>
+        )}
+      </div>
       <ul className="space-y-1.5">
         {candidates.map((c) => (
           <CandidateRow
