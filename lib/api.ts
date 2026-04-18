@@ -6,11 +6,10 @@ import type {
   RawMaterial,
   Supplier,
   BOM,
-  Substitution,
-  Proposal,
-  AgnesSuggestedQuestion,
   AgnesAskRequest,
   AgnesAskResponse,
+  DecisionCreate,
+  Decision,
 } from '@/lib/types';
 
 export class ApiError extends Error {
@@ -22,20 +21,6 @@ export class ApiError extends Error {
     this.status = status;
     this.body = body;
   }
-}
-
-async function reqLive<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    cache: 'no-store',
-    ...init,
-    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
-  });
-  if (!res.ok) {
-    let body: unknown = null;
-    try { body = await res.json(); } catch { body = await res.text().catch(() => null); }
-    throw new ApiError(`${res.status} ${res.statusText} — ${path}`, res.status, body);
-  }
-  return (await res.json()) as T;
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
@@ -68,16 +53,6 @@ function qs(params: Record<string, string | number | undefined>): string {
   for (const [k, v] of Object.entries(params)) if (v != null && v !== '') sp.set(k, String(v));
   const s = sp.toString();
   return s ? `?${s}` : '';
-}
-
-// ─── Proposals ────────────────────────────────────────────────────────────────
-
-export function getProposals(): Promise<Proposal[]> {
-  return req<Proposal[]>('/proposals');
-}
-
-export function getProposal(id: number): Promise<Proposal> {
-  return req<Proposal>(`/proposals/${id}`);
 }
 
 // ─── Companies ────────────────────────────────────────────────────────────────
@@ -120,35 +95,30 @@ export function getSupplier(id: number): Promise<Supplier> {
   return req<Supplier>(`/suppliers/${id}`);
 }
 
-// ─── Substitutions ────────────────────────────────────────────────────────────
-
-export function getSubstitutions(): Promise<Substitution[]> {
-  return req<Substitution[]>('/substitutions');
-}
-
 // ─── BOM ──────────────────────────────────────────────────────────────────────
 
 export function getBom(productId: number): Promise<BOM> {
   return req<BOM>(`/products/${productId}/bom`);
 }
 
-// ─── Tuning (v2: deferred post-hackathon) ────────────────────────────────────
-// export function getSupplierAllocations(): Promise<SupplierAllocation[]> {
-//   return req<SupplierAllocation[]>('/tuning/allocations');
-// }
-// export function applyTuning(body: TuningRequest): Promise<TuningResponse> {
-//   return req<TuningResponse>('/tuning/allocations', { method: 'POST', body: JSON.stringify(body) });
-// }
-
 // ─── Agnes ────────────────────────────────────────────────────────────────────
 
-export function getAgnesSuggestions(proposalId: number): Promise<AgnesSuggestedQuestion[]> {
-  return reqLive<AgnesSuggestedQuestion[]>(`/agnes/suggestions?proposal_id=${proposalId}`);
-}
-
 export function askAgnes(body: AgnesAskRequest): Promise<AgnesAskResponse> {
-  return reqLive<AgnesAskResponse>('/agnes/ask', {
+  return req<AgnesAskResponse>('/agnes/ask', {
     method: 'POST',
     body: JSON.stringify(body),
   });
+}
+
+// ─── Decisions ────────────────────────────────────────────────────────────────
+
+export function postDecision(body: DecisionCreate): Promise<Decision> {
+  return req<Decision>('/decisions', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export function getDecisions(sessionId: string): Promise<Decision[]> {
+  return req<Decision[]>(`/decisions?session_id=${encodeURIComponent(sessionId)}`);
 }

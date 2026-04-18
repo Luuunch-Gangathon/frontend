@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { getRawMaterial, getProposals } from "@/lib/api"
+import { getRawMaterial } from "@/lib/api"
 import {
   getSuppliersForRawMaterial,
   getFinishedGoodsUsingRawMaterial,
@@ -29,12 +29,9 @@ export default async function RawMaterialPage({
     notFound()
   }
 
-  const proposals = await getProposals()
-
   const suppliers = getSuppliersForRawMaterial(numericRawMaterialId)
   const finishedGoods = getFinishedGoodsUsingRawMaterial(numericRawMaterialId)
   const companies = getCompaniesUsingRawMaterial(numericRawMaterialId)
-  const oppCount = proposals.filter((o) => o.raw_material_id === numericRawMaterialId).length
 
   return (
     <AppShell>
@@ -56,7 +53,6 @@ export default async function RawMaterialPage({
           { label: "Current suppliers", value: suppliers.length },
           { label: "Finished goods", value: finishedGoods.length },
           { label: "Companies", value: companies.length },
-          { label: "Open proposals", value: oppCount },
         ]}
       />
 

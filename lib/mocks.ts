@@ -4,11 +4,6 @@ import {
   RAW_MATERIALS,
   SUPPLIERS,
   BOMS,
-  SUBSTITUTIONS,
-  PROPOSALS,
-  AGNES_SUGGESTED_QUESTIONS,
-  AGNES_CANNED_RESPONSES,
-  getProposals,
 } from '@/lib/demo-data';
 
 function idMatch(path: string, prefix: string): string | null {
@@ -22,17 +17,6 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
   await new Promise((r) => setTimeout(r, 120));
   const [p, query] = path.split('?');
   const params = new URLSearchParams(query ?? '');
-
-  // ─── Proposals ───────────────────────────────────────────────────────────
-  if (p === '/proposals') return getProposals() as unknown as T;
-
-  const proposalId = idMatch(p, '/proposals');
-  if (proposalId) {
-    const numId = parseInt(proposalId, 10);
-    const found = PROPOSALS.find((o) => o.id === numId);
-    if (!found) throw Object.assign(new Error('Not found'), { status: 404 });
-    return found as unknown as T;
-  }
 
   // ─── Companies ───────────────────────────────────────────────────────────
   if (p === '/companies') return COMPANIES as unknown as T;
@@ -91,40 +75,26 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
     return found as unknown as T;
   }
 
-  // ─── Substitutions ────────────────────────────────────────────────────────
-  if (p === '/substitutions') return SUBSTITUTIONS as unknown as T;
-
-  // ─── Tuning (v2: deferred post-hackathon) ────────────────────────────────
-  // if (p === '/tuning/allocations') {
-  //   if (init?.method === 'POST') return { allocations: SUPPLIER_ALLOCATIONS, proposals: PROPOSALS } as unknown as T;
-  //   return SUPPLIER_ALLOCATIONS as unknown as T;
-  // }
-
   // ─── Agnes ────────────────────────────────────────────────────────────────
-  if (p === '/agnes/suggestions') {
-    const pid = params.get('proposal_id') ?? '';
-    const numPid = parseInt(pid, 10);
-    return (AGNES_SUGGESTED_QUESTIONS[numPid] ?? []) as unknown as T;
-  }
-
   if (p === '/agnes/ask' && init?.method === 'POST') {
-    await new Promise((r) => setTimeout(r, 480)); // total ~600ms with leading delay
-    const body = JSON.parse(init.body as string) as { proposal_id: number; message: string; session_id?: string | null };
-    const session_id = body.session_id ?? `mock-session-${body.proposal_id}-${Date.now()}`;
-    const canned = AGNES_CANNED_RESPONSES[body.proposal_id] ?? [];
-    const lower = body.message.toLowerCase();
-    const match = canned.find((entry) =>
-      entry.keywords.some((k) => lower.includes(k.toLowerCase()))
-    );
-    if (match) return { reply: match.reply, session_id } as unknown as T;
+    await new Promise((r) => setTimeout(r, 480));
+    const session_id = `mock-session-${Date.now()}`;
     return {
       reply: {
         role: 'assistant',
-        content: "I don't have specific data on that yet — try one of the suggested questions above, where my analysis is most complete.",
-        reasoning_steps: ['No keyword match found in canned response library for this proposal.'],
+        content: "Mock mode is active. Connect to the live backend to use the tool-calling agent.",
       },
       session_id,
+      tool_calls: [],
     } as unknown as T;
+  }
+
+  // ─── Decisions ────────────────────────────────────────────────────────────
+  if (p === '/decisions' && init?.method === 'POST') {
+    return { id: 1, ...JSON.parse(init.body as string) } as unknown as T;
+  }
+  if (p === '/decisions') {
+    return [] as unknown as T;
   }
 
   throw new Error(`mock: no handler for ${path}`);

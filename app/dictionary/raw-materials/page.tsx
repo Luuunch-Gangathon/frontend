@@ -1,8 +1,4 @@
 import { getRawMaterials } from "@/lib/api"
-import {
-  SUPPLIER_RAW_MATERIALS,
-  BOMS,
-} from "@/lib/demo-data"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { DataTable } from "@/components/blocks/data-table"
@@ -10,14 +6,6 @@ import type { RawMaterial } from "@/lib/types"
 
 export default async function DictionaryRawMaterialsPage() {
   const rawMaterials = await getRawMaterials()
-
-  function supplierCount(rmId: number) {
-    return SUPPLIER_RAW_MATERIALS.filter((srm) => srm.raw_material_id === rmId).length
-  }
-
-  function productCount(rmId: number) {
-    return BOMS.filter((b) => b.consumed_raw_material_ids.includes(rmId)).length
-  }
 
   return (
     <AppShell>
@@ -37,8 +25,8 @@ export default async function DictionaryRawMaterialsPage() {
         <DataTable<RawMaterial>
           columns={[
             { key: "sku", label: "SKU", render: (r) => <code className="font-mono text-xs">{r.sku}</code> },
-            { key: "suppliers", label: "Suppliers", render: (r) => supplierCount(r.id) },
-            { key: "products", label: "Used in products", render: (r) => productCount(r.id) },
+            { key: "suppliers", label: "Suppliers", render: (r) => r.suppliers_count ?? 0 },
+            { key: "products", label: "Used in products", render: (r) => r.used_products_count ?? 0 },
           ]}
           rows={rawMaterials}
           getRowHref={(r) => `/raw-materials/${r.id}`}
