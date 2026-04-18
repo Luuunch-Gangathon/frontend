@@ -24,12 +24,12 @@ export default async function DictionaryRawMaterialsPage() {
       <div className="mt-8">
         <DataTable<RawMaterial>
           columns={[
-            { key: "sku", label: "SKU", render: (r) => <code className="font-mono text-xs">{r.sku}</code> },
-            { key: "suppliers", label: "Suppliers", render: (r) => r.suppliers_count ?? 0 },
-            { key: "products", label: "Used in products", render: (r) => r.used_products_count ?? 0 },
+            { key: "name", label: "Name", render: (r) => r.name },
+            { key: "supplier_count", label: "Suppliers", render: (r) => r.supplier_count },
+            { key: "product_count", label: "Used in products", render: (r) => r.product_count },
           ]}
           rows={rawMaterials}
-          getRowHref={(r) => `/raw-materials/${r.id}`}
+          getRowHref={(r) => `/raw-materials/${encodeURIComponent(r.name)}`}
         />
       </div>
     </AppShell>

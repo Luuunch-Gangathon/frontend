@@ -125,11 +125,11 @@ function MaterialsList({
           <>
             {browseRawMaterials.map((m) => (
               <Link
-                key={m.id}
-                href={`/raw-materials/${m.id}`}
+                key={m.name}
+                href={`/raw-materials/${encodeURIComponent(m.name)}`}
                 className="flex items-center rounded-md px-2 py-1.5 text-xs hover:bg-muted transition-colors"
               >
-                <span className="font-mono text-foreground truncate">{m.sku}</span>
+                <span className="text-foreground truncate">{m.name}</span>
               </Link>
             ))}
             <Link

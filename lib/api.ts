@@ -81,8 +81,8 @@ export function getRawMaterials(): Promise<RawMaterial[]> {
   return req<RawMaterial[]>('/raw-materials');
 }
 
-export function getRawMaterial(id: number): Promise<RawMaterial> {
-  return req<RawMaterial>(`/raw-materials/${id}`);
+export function getRawMaterial(name: string): Promise<RawMaterial> {
+  return req<RawMaterial>(`/raw-materials/${encodeURIComponent(name)}`);
 }
 
 // ─── Suppliers ────────────────────────────────────────────────────────────────

@@ -11,7 +11,7 @@ import { StatsStrip } from "@/components/blocks/stats-strip"
 import { Section } from "@/components/blocks/section"
 import { DataTable } from "@/components/blocks/data-table"
 import { CompanyBadge } from "@/components/blocks/company-badge"
-import type { RawMaterial, Company } from "@/lib/types"
+import type { Company } from "@/lib/types"
 
 export default async function SupplierPage({
   params,
@@ -55,12 +55,12 @@ export default async function SupplierPage({
       />
 
       <Section title="Raw materials supplied">
-        <DataTable<RawMaterial>
+        <DataTable
           columns={[
             {
               key: "sku",
-              label: "SKU",
-              render: (r) => <code className="font-mono text-xs">{r.sku}</code>,
+              label: "Raw material",
+              render: (r) => r.sku,
             },
             {
               key: "competing",
@@ -69,7 +69,7 @@ export default async function SupplierPage({
             },
           ]}
           rows={rawMaterials}
-          getRowHref={(r) => `/raw-materials/${r.id}`}
+          getRowHref={(r) => `/raw-materials/${encodeURIComponent(r.sku)}`}
         />
       </Section>
 

@@ -54,14 +54,27 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
   }
 
   // ─── Raw Materials ────────────────────────────────────────────────────────
-  if (p === '/raw-materials') return RAW_MATERIALS as unknown as T;
+  if (p === '/raw-materials') {
+    const mocked = RAW_MATERIALS.map((r) => ({
+      name: r.sku.replace(/^RM-[A-Z0-9]+-/, '').toLowerCase(),
+      supplier_count: 1,
+      product_count: 1,
+    }));
+    return mocked as unknown as T;
+  }
 
-  const rawMaterialId = idMatch(p, '/raw-materials');
-  if (rawMaterialId) {
-    const numId = parseInt(rawMaterialId, 10);
-    const found = RAW_MATERIALS.find((r) => r.id === numId);
+  const rawMaterialName = idMatch(p, '/raw-materials');
+  if (rawMaterialName) {
+    const name = decodeURIComponent(rawMaterialName);
+    const found = RAW_MATERIALS.find((r) =>
+      r.sku.toLowerCase().includes(name.toLowerCase())
+    );
     if (!found) throw Object.assign(new Error('Not found'), { status: 404 });
-    return found as unknown as T;
+    return {
+      name,
+      supplier_count: 1,
+      product_count: 1,
+    } as unknown as T;
   }
 
   // ─── Suppliers ────────────────────────────────────────────────────────────

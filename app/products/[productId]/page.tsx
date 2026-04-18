@@ -8,7 +8,6 @@ import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { Section } from "@/components/blocks/section"
 import { DataTable } from "@/components/blocks/data-table"
-import type { RawMaterial } from "@/lib/types"
 
 export default async function ProductPage({
   params,
@@ -50,22 +49,22 @@ export default async function ProductPage({
       </div>
 
       <Section title="Bill of materials">
-        <DataTable<RawMaterial>
+        <DataTable
           columns={[
-            { key: "sku", label: "Raw material SKU", render: (r) => <code className="font-mono text-xs">{r.sku}</code> },
+            { key: "sku", label: "Raw material", render: (r) => r.sku },
             {
               key: "suppliers",
               label: "Suppliers",
               render: (r) => {
                 const suppliers = getSuppliersForRawMaterial(r.id)
                 return suppliers.length > 0
-                  ? suppliers.map((s) => s.name).join(", ")
+                  ? suppliers.map((s: { name: string }) => s.name).join(", ")
                   : <span className="text-muted-foreground">—</span>
               },
             },
           ]}
           rows={rawMaterials}
-          getRowHref={(r) => `/raw-materials/${r.id}`}
+          getRowHref={(r) => `/raw-materials/${encodeURIComponent(r.sku)}`}
         />
       </Section>
     </AppShell>

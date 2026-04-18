@@ -14,10 +14,9 @@ export interface Product {
 }
 
 export interface RawMaterial {
-  id: number
-  sku: string
-  suppliers_count?: number
-  used_products_count?: number
+  name: string
+  supplier_count: number
+  product_count: number
 }
 
 export interface Supplier {
