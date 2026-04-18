@@ -70,14 +70,20 @@ export function ChatPanel({
           />
         ))}
 
-        {isLoading && (
-          <div className="flex items-start gap-3">
-            <AgnesAvatar />
-            <div className="flex-1 min-w-0">
-              <ThinkingIndicator />
-            </div>
-          </div>
-        )}
+        {isLoading &&
+          (() => {
+            const last = messages[messages.length - 1]
+            const alreadyStreaming = last?.role === 'assistant' && last.content.length > 0
+            if (alreadyStreaming) return null
+            return (
+              <div className="flex items-start gap-3">
+                <AgnesAvatar />
+                <div className="flex-1 min-w-0">
+                  <ThinkingIndicator />
+                </div>
+              </div>
+            )
+          })()}
 
         <div ref={bottomRef} />
       </div>

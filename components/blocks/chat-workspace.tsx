@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
-import { askAgnes } from '@/lib/api'
+import { streamAgnes } from '@/lib/api'
 import { aggregateEntities } from '@/lib/aggregate-entities'
 import { ChatPanel } from './chat-panel'
 import { ContextSidebar } from './context-sidebar'
@@ -79,26 +79,47 @@ export function ChatWorkspace() {
       setInput('')
       setIsLoading(true)
 
-      try {
-        const res = await askAgnes({
-          message: trimmed,
-          session_id: sessionId,
-          product_id: sessionId ? null : selectedProduct.id,
+      let placeholderInserted = false
+      const appendToken = (chunk: string) => {
+        setMessages((prev) => {
+          if (!placeholderInserted) {
+            placeholderInserted = true
+            return [...prev, { role: 'assistant', content: chunk, tool_calls: [] }]
+          }
+          const next = prev.slice()
+          const last = next[next.length - 1]
+          if (last?.role === 'assistant') {
+            next[next.length - 1] = { ...last, content: last.content + chunk }
+          }
+          return next
         })
-        setSessionId(res.session_id)
-        setMessages((prev) => [
-          ...prev,
+      }
+
+      try {
+        let streamErr: string | null = null
+        await streamAgnes(
           {
-            role: 'assistant',
-            content: res.reply.content,
-            tool_calls: res.tool_calls ?? [],
+            message: trimmed,
+            session_id: sessionId,
+            product_id: sessionId ? null : selectedProduct.id,
           },
-        ])
+          {
+            onSession: (sid) => setSessionId(sid),
+            onToken: appendToken,
+            onError: (msg) => {
+              streamErr = msg
+            },
+          },
+        )
+        if (streamErr) throw new Error(streamErr)
       } catch {
-        setMessages((prev) => [
-          ...prev,
-          { role: 'assistant', content: 'Sorry, I ran into an error. Please try again.', tool_calls: [] },
-        ])
+        setMessages((prev) => {
+          if (placeholderInserted) return prev
+          return [
+            ...prev,
+            { role: 'assistant', content: 'Sorry, I ran into an error. Please try again.', tool_calls: [] },
+          ]
+        })
       } finally {
         setIsLoading(false)
       }

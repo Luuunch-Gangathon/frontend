@@ -122,6 +122,95 @@ export function askAgnes(body: AgnesAskRequest): Promise<AgnesAskResponse> {
   });
 }
 
+export interface StreamAgnesCallbacks {
+  onSession?: (sessionId: string) => void;
+  onToken?: (text: string) => void;
+  onToolStart?: (name: string) => void;
+  onToolEnd?: (name: string) => void;
+  onDone?: () => void;
+  onError?: (message: string) => void;
+}
+
+type StreamEvent =
+  | { type: 'session'; session_id: string }
+  | { type: 'token'; text: string }
+  | { type: 'tool_start'; name: string }
+  | { type: 'tool_end'; name: string }
+  | { type: 'done' }
+  | { type: 'error'; message: string };
+
+export async function streamAgnes(
+  body: AgnesAskRequest,
+  callbacks: StreamAgnesCallbacks,
+  signal?: AbortSignal,
+): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/agnes/ask/stream`, {
+    method: 'POST',
+    cache: 'no-store',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  });
+
+  if (!res.ok || !res.body) {
+    let errBody: unknown = null;
+    try {
+      errBody = await res.json();
+    } catch {
+      errBody = await res.text().catch(() => null);
+    }
+    throw new ApiError(`${res.status} ${res.statusText} — /agnes/ask/stream`, res.status, errBody);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  const handle = (line: string) => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    let event: StreamEvent;
+    try {
+      event = JSON.parse(trimmed) as StreamEvent;
+    } catch {
+      return;
+    }
+    switch (event.type) {
+      case 'session':
+        callbacks.onSession?.(event.session_id);
+        break;
+      case 'token':
+        callbacks.onToken?.(event.text);
+        break;
+      case 'tool_start':
+        callbacks.onToolStart?.(event.name);
+        break;
+      case 'tool_end':
+        callbacks.onToolEnd?.(event.name);
+        break;
+      case 'done':
+        callbacks.onDone?.();
+        break;
+      case 'error':
+        callbacks.onError?.(event.message);
+        break;
+    }
+  };
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let nl: number;
+    while ((nl = buffer.indexOf('\n')) !== -1) {
+      const line = buffer.slice(0, nl);
+      buffer = buffer.slice(nl + 1);
+      handle(line);
+    }
+  }
+  if (buffer) handle(buffer);
+}
+
 // ─── Decisions ────────────────────────────────────────────────────────────────
 
 export function postDecision(body: DecisionCreate): Promise<Decision> {
