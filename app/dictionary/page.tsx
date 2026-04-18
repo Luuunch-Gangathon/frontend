@@ -15,7 +15,7 @@ export default async function DictionaryPage() {
   const sections = [
     { label: "Companies", count: companies.length, href: "/dictionary/companies", description: "Portfolio companies and their finished goods" },
     { label: "Products", count: products.length, href: "/dictionary/products", description: "Finished goods across all portfolio companies" },
-    { label: "Raw Materials", count: rawMaterials.length, href: "/dictionary/raw-materials", description: "Excipients and active ingredients" },
+    { label: "Raw Materials", count: rawMaterials.length, href: "/dictionary/raw-materials", description: "Excipients and active pharmaceutical inputs" },
     { label: "Suppliers", count: suppliers.length, href: "/dictionary/suppliers", description: "Qualified raw material suppliers" },
     { label: "Substitutions", count: substitutions.length, href: "/dictionary/substitutions", description: "Known functionally-equivalent raw material swaps" },
   ]

@@ -4,7 +4,9 @@
 
 Next.js app consuming the FastAPI backend in `../backend`. Contract: `knowledge/api-contract.md`.
 
-The repo ships with a single template endpoint (`GET /ingredients`) wired end-to-end. Use it as the reference when adding new endpoints — see `knowledge/api-contract.md` for the five-step recipe.
+Use `GET /raw-materials` as the reference pattern when adding new endpoints — see `knowledge/api-contract.md` for the five-step recipe.
+
+> **Backend TODO:** drop the legacy `/ingredients` endpoint and its `Ingredient` schema. The frontend no longer consumes them; running `yarn gen:types` against the current backend will still regenerate `Ingredient` into `lib/types.generated.ts` until the backend removes it.
 
 ## Type generation flow
 
@@ -22,16 +24,15 @@ to see real changes.
 
 ### File layout
 - **`lib/types.generated.ts`** — auto-generated. Raw `openapi-typescript` output
-  (nested `components['schemas']['Ingredient']` shape). DO NOT hand-edit.
+  (nested `components['schemas']['RawMaterial']` shape). DO NOT hand-edit.
 - **`lib/types.ts`** — hand-maintained facade. Re-exports REST types with clean
-  names (`Ingredient`, …). Add a line here whenever the backend adds a schema
-  you want to consume by its short name.
-- **`lib/api.ts`** — one typed function per endpoint (`getIngredients` is the
-  template). Shared `ApiError` + `req<T>()` helper + mocks toggle.
+  names (`RawMaterial`, `Proposal`, …). Add a line here whenever the backend
+  adds a schema you want to consume by its short name.
+- **`lib/api.ts`** — one typed function per endpoint (`getRawMaterials` is the
+  canonical pattern). Shared `ApiError` + `req<T>()` helper + mocks toggle.
 - **`lib/mocks.ts`** — path-keyed fixture responses gated by
   `NEXT_PUBLIC_USE_MOCKS=1`. Extend alongside new endpoints.
-- **`app/page.tsx`** — button-per-endpoint smoke tester. Add a button when you
-  add a new endpoint.
+- **`app/page.tsx`** — proposals dashboard (the demo's main surface).
 
 ## Contract integration notes
 - Toggle live vs. mocked backend: `NEXT_PUBLIC_USE_MOCKS=1` in `.env.local`

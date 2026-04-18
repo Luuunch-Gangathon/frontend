@@ -2,12 +2,6 @@
 // TODO: once backend publishes new schemas, re-run `yarn gen:types` and swap
 // each interface below to `type Foo = S['Foo']` from ./types.generated.
 
-// ─── Ingredient (legacy smoke-test template — keep until backend drops it) ──
-
-import type { components } from './types.generated';
-type S = components['schemas'];
-export type Ingredient = S['Ingredient'];
-
 // ─── Core entities ────────────────────────────────────────────────────────────
 
 export interface Company {

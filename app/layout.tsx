@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Spherecast — Supply Chain Co-Pilot",
-  description: "Portfolio-wide supply chain intelligence across ingredients, suppliers, and companies.",
+  description: "Portfolio-wide supply chain intelligence across raw materials, suppliers, and companies.",
 };
 
 export default function RootLayout({

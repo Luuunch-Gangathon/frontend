@@ -1,7 +1,6 @@
 import { API_BASE_URL, USE_MOCKS } from '@/lib/env';
 import { mockResponse } from '@/lib/mocks';
 import type {
-  Ingredient,
   Company,
   Product,
   RawMaterial,
@@ -55,11 +54,6 @@ function qs(params: Record<string, string | undefined>): string {
   for (const [k, v] of Object.entries(params)) if (v != null && v !== '') sp.set(k, v);
   const s = sp.toString();
   return s ? `?${s}` : '';
-}
-
-// Template helper — mirrors the `GET /ingredients` endpoint on the backend.
-export function getIngredients(params: { name?: string; company_id?: string } = {}): Promise<Ingredient[]> {
-  return req<Ingredient[]>(`/ingredients${qs(params)}`);
 }
 
 // ─── Proposals ────────────────────────────────────────────────────────────────
