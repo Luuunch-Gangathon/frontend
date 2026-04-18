@@ -85,6 +85,18 @@ export function getRawMaterial(id: number): Promise<RawMaterial> {
   return req<RawMaterial>(`/raw-materials/${id}`);
 }
 
+export function getRawMaterialSuppliers(id: number): Promise<Supplier[]> {
+  return req<Supplier[]>(`/raw-materials/${id}/suppliers`);
+}
+
+export function getRawMaterialFinishedGoods(id: number): Promise<Product[]> {
+  return req<Product[]>(`/raw-materials/${id}/finished-goods`);
+}
+
+export function getRawMaterialCompanies(id: number): Promise<Company[]> {
+  return req<Company[]>(`/raw-materials/${id}/companies`);
+}
+
 // ─── Suppliers ────────────────────────────────────────────────────────────────
 
 export function getSuppliers(): Promise<Supplier[]> {

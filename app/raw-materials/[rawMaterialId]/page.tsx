@@ -1,11 +1,5 @@
 import { notFound } from "next/navigation"
-import { getRawMaterial } from "@/lib/api"
-import {
-  getSuppliersForRawMaterial,
-  getFinishedGoodsUsingRawMaterial,
-  getCompaniesUsingRawMaterial,
-  getCompany,
-} from "@/lib/demo-data"
+import { getRawMaterial, getRawMaterialSuppliers, getRawMaterialFinishedGoods, getRawMaterialCompanies } from "@/lib/api"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { StatsStrip } from "@/components/blocks/stats-strip"
@@ -29,9 +23,13 @@ export default async function RawMaterialPage({
     notFound()
   }
 
-  const suppliers = getSuppliersForRawMaterial(numericRawMaterialId)
-  const finishedGoods = getFinishedGoodsUsingRawMaterial(numericRawMaterialId)
-  const companies = getCompaniesUsingRawMaterial(numericRawMaterialId)
+  const [suppliers, finishedGoods, companies] = await Promise.all([
+    getRawMaterialSuppliers(numericRawMaterialId),
+    getRawMaterialFinishedGoods(numericRawMaterialId),
+    getRawMaterialCompanies(numericRawMaterialId),
+  ])
+
+  const companyById = new Map(companies.map((c) => [c.id, c.name]))
 
   return (
     <AppShell>
@@ -73,7 +71,7 @@ export default async function RawMaterialPage({
             {
               key: "company",
               label: "Company",
-              render: (p) => getCompany(p.company_id)?.name ?? String(p.company_id),
+              render: (p) => companyById.get(p.company_id) ?? String(p.company_id),
             },
           ]}
           rows={finishedGoods}

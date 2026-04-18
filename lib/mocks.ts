@@ -4,6 +4,9 @@ import {
   RAW_MATERIALS,
   SUPPLIERS,
   BOMS,
+  getSuppliersForRawMaterial,
+  getFinishedGoodsUsingRawMaterial,
+  getCompaniesUsingRawMaterial,
 } from '@/lib/demo-data';
 
 function idMatch(path: string, prefix: string): string | null {
@@ -55,6 +58,24 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
 
   // ─── Raw Materials ────────────────────────────────────────────────────────
   if (p === '/raw-materials') return RAW_MATERIALS as unknown as T;
+
+  const rmSuppliersMatch = p.match(/^\/raw-materials\/([^/]+)\/suppliers$/);
+  if (rmSuppliersMatch) {
+    const numId = parseInt(rmSuppliersMatch[1], 10);
+    return getSuppliersForRawMaterial(numId) as unknown as T;
+  }
+
+  const rmFinishedGoodsMatch = p.match(/^\/raw-materials\/([^/]+)\/finished-goods$/);
+  if (rmFinishedGoodsMatch) {
+    const numId = parseInt(rmFinishedGoodsMatch[1], 10);
+    return getFinishedGoodsUsingRawMaterial(numId) as unknown as T;
+  }
+
+  const rmCompaniesMatch = p.match(/^\/raw-materials\/([^/]+)\/companies$/);
+  if (rmCompaniesMatch) {
+    const numId = parseInt(rmCompaniesMatch[1], 10);
+    return getCompaniesUsingRawMaterial(numId) as unknown as T;
+  }
 
   const rawMaterialId = idMatch(p, '/raw-materials');
   if (rawMaterialId) {
