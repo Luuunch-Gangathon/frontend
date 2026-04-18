@@ -14,6 +14,8 @@ import { FragmentationBadge } from "@/components/blocks/fragmentation-badge"
 import { AggressiveToggle } from "@/components/blocks/aggressive-toggle"
 import { DataTable } from "@/components/blocks/data-table"
 import { EvidenceTrail } from "@/components/blocks/evidence-trail"
+import { AgentInsight } from "@/components/blocks/agent-insight"
+import { PlanCartButton } from "@/components/blocks/plan-cart-button"
 
 export default async function OpportunityPage({
   params,
@@ -172,7 +174,10 @@ export default async function OpportunityPage({
         <EvidenceTrail items={opp.evidence} />
       </Section>
 
-      <div className="mt-16 flex justify-end border-t border-border pt-6">
+      <AgentInsight opportunity={opp} />
+
+      <div className="mt-16 flex items-center justify-between border-t border-border pt-6">
+        <PlanCartButton opportunityId={opp.id} />
         <Link
           href={nextHref}
           className="inline-flex items-center rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"

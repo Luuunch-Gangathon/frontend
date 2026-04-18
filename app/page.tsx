@@ -2,6 +2,9 @@ import { getPortfolioStats, getOpportunities, getCompany } from "@/lib/demo-data
 import { AppShell } from "@/components/layout/app-shell"
 import { StatsStrip } from "@/components/blocks/stats-strip"
 import { OpportunityCard } from "@/components/blocks/opportunity-card"
+import { RecommendedSequence } from "@/components/blocks/recommended-sequence"
+import { PortfolioCharts } from "@/components/blocks/portfolio-charts"
+import { CompareFloat } from "@/components/blocks/compare-float"
 
 export default function Home() {
   const stats = getPortfolioStats()
@@ -26,7 +29,12 @@ export default function Home() {
         ]}
       />
 
-      <div className="mt-10 space-y-4">
+      <RecommendedSequence />
+
+      <PortfolioCharts />
+
+      <h2 className="mt-10 text-lg font-semibold mb-4">All opportunities</h2>
+      <div className="space-y-4">
         {opportunities.map((opp) => {
           const companies = opp.companies_involved
             .map((id) => getCompany(id))
@@ -34,6 +42,8 @@ export default function Home() {
           return <OpportunityCard key={opp.id} opportunity={opp} companies={companies} />
         })}
       </div>
+
+      <CompareFloat />
     </AppShell>
   )
 }
