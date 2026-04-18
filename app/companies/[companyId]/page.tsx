@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation"
+import { getCompany, getProducts } from "@/lib/api"
 import {
-  getCompany,
-  getFinishedGoodsForCompany,
   getRawMaterialsForProduct,
   getSuppliersForRawMaterial,
   getCompaniesUsingRawMaterial,
+  getCompany as getCompanyFromData,
 } from "@/lib/demo-data"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
@@ -12,6 +12,7 @@ import { StatsStrip } from "@/components/blocks/stats-strip"
 import { Section } from "@/components/blocks/section"
 import { DataTable } from "@/components/blocks/data-table"
 import { CompanyBadge } from "@/components/blocks/company-badge"
+import type { Product } from "@/lib/types"
 
 export default async function CompanyPage({
   params,
@@ -19,10 +20,15 @@ export default async function CompanyPage({
   params: Promise<{ companyId: string }>
 }) {
   const { companyId } = await params
-  const company = getCompany(companyId)
-  if (!company) notFound()
 
-  const products = getFinishedGoodsForCompany(companyId)
+  let company
+  try {
+    company = await getCompany(companyId)
+  } catch {
+    notFound()
+  }
+
+  const products = await getProducts({ company_id: companyId })
 
   const rawMaterialIds = new Set<string>()
   for (const p of products) {
@@ -48,7 +54,7 @@ export default async function CompanyPage({
     }
   }
   const sharedCompanies = [...sharedCompanyIds]
-    .map((id) => getCompany(id))
+    .map((id) => getCompanyFromData(id))
     .filter((c): c is NonNullable<typeof c> => c != null)
 
   return (
@@ -76,7 +82,7 @@ export default async function CompanyPage({
       />
 
       <Section title="Finished goods">
-        <DataTable
+        <DataTable<Product>
           columns={[
             { key: "sku", label: "SKU", render: (p) => <code className="font-mono text-xs">{p.sku}</code> },
             {

@@ -1,15 +1,15 @@
 import Link from "next/link"
 import { CompanyBadge } from "@/components/blocks/company-badge"
 import { FragmentationBadge } from "@/components/blocks/fragmentation-badge"
-import type { Opportunity, Company } from "@/lib/demo-data"
+import type { Proposal, Company } from "@/lib/types"
 
-interface OpportunityCardProps {
-  opportunity: Opportunity
+interface ProposalCardProps {
+  proposal: Proposal
   companies: Company[]
 }
 
-export function OpportunityCard({ opportunity, companies }: OpportunityCardProps) {
-  const kindCls = opportunity.kind === "consolidate"
+export function ProposalCard({ proposal, companies }: ProposalCardProps) {
+  const kindCls = proposal.kind === "optimization"
     ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
     : "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400"
 
@@ -17,14 +17,14 @@ export function OpportunityCard({ opportunity, companies }: OpportunityCardProps
     <div className="rounded-xl border border-border bg-card p-6">
       <div className="flex items-center gap-2 mb-3">
         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${kindCls}`}>
-          {opportunity.kind === "consolidate" ? "Consolidate" : "Substitute"}
+          {proposal.kind === "optimization" ? "Optimization" : "Substitution"}
         </span>
-        <FragmentationBadge score={opportunity.fragmentation_score} />
+        <FragmentationBadge score={proposal.fragmentation_score} />
       </div>
-      <h3 className="text-base font-semibold">{opportunity.headline}</h3>
-      <p className="mt-1.5 text-sm text-muted-foreground">{opportunity.summary}</p>
+      <h3 className="text-base font-semibold">{proposal.headline}</h3>
+      <p className="mt-1.5 text-sm text-muted-foreground">{proposal.summary}</p>
       <p className="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-        {opportunity.estimated_impact}
+        {proposal.estimated_impact}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         {companies.map((c) => (
@@ -33,10 +33,10 @@ export function OpportunityCard({ opportunity, companies }: OpportunityCardProps
       </div>
       <div className="mt-4">
         <Link
-          href={`/opportunities/${opportunity.id}`}
+          href={`/proposals/${proposal.id}`}
           className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
         >
-          Review opportunity →
+          Review proposal →
         </Link>
       </div>
     </div>

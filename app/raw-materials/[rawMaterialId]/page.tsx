@@ -1,11 +1,10 @@
 import { notFound } from "next/navigation"
+import { getRawMaterial, getProposals } from "@/lib/api"
 import {
-  getRawMaterial,
   getSuppliersForRawMaterial,
   getFinishedGoodsUsingRawMaterial,
   getCompaniesUsingRawMaterial,
   getCompany,
-  getOpportunities,
 } from "@/lib/demo-data"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
@@ -13,6 +12,7 @@ import { StatsStrip } from "@/components/blocks/stats-strip"
 import { Section } from "@/components/blocks/section"
 import { DataTable } from "@/components/blocks/data-table"
 import { CompanyBadge } from "@/components/blocks/company-badge"
+import type { Supplier, Product } from "@/lib/types"
 
 export default async function RawMaterialPage({
   params,
@@ -20,13 +20,20 @@ export default async function RawMaterialPage({
   params: Promise<{ rawMaterialId: string }>
 }) {
   const { rawMaterialId } = await params
-  const rawMaterial = getRawMaterial(rawMaterialId)
-  if (!rawMaterial) notFound()
+
+  let rawMaterial
+  try {
+    rawMaterial = await getRawMaterial(rawMaterialId)
+  } catch {
+    notFound()
+  }
+
+  const proposals = await getProposals()
 
   const suppliers = getSuppliersForRawMaterial(rawMaterialId)
   const finishedGoods = getFinishedGoodsUsingRawMaterial(rawMaterialId)
   const companies = getCompaniesUsingRawMaterial(rawMaterialId)
-  const oppCount = getOpportunities().filter((o) => o.raw_material_id === rawMaterialId).length
+  const oppCount = proposals.filter((o) => o.raw_material_id === rawMaterialId).length
 
   return (
     <AppShell>
@@ -48,21 +55,22 @@ export default async function RawMaterialPage({
           { label: "Current suppliers", value: suppliers.length },
           { label: "Finished goods", value: finishedGoods.length },
           { label: "Companies", value: companies.length },
-          { label: "Open opportunities", value: oppCount },
+          { label: "Open proposals", value: oppCount },
         ]}
       />
 
       <Section title="Current suppliers">
-        <DataTable
+        <DataTable<Supplier>
           columns={[
             { key: "name", label: "Supplier", render: (s) => s.name },
           ]}
           rows={suppliers}
+          getRowHref={(s) => `/suppliers/${s.id}`}
         />
       </Section>
 
       <Section title="Finished goods consuming this raw material">
-        <DataTable
+        <DataTable<Product>
           columns={[
             { key: "sku", label: "SKU", render: (p) => <code className="font-mono text-xs">{p.sku}</code> },
             {
