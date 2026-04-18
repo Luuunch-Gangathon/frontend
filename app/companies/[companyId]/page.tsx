@@ -1,20 +1,17 @@
 import { notFound } from "next/navigation"
-import Link from "next/link"
 import {
   getCompany,
-  getProductsForCompany,
-  getIngredient,
-  getSupplier,
-  getIngredientOverlapScore,
-  getCompaniesUsingIngredient,
-  getSupplierForCompanyIngredient,
+  getFinishedGoodsForCompany,
+  getRawMaterialsForProduct,
+  getSuppliersForRawMaterial,
+  getCompaniesUsingRawMaterial,
 } from "@/lib/demo-data"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { StatsStrip } from "@/components/blocks/stats-strip"
-import { ZoneSection } from "@/components/blocks/zone-section"
+import { Section } from "@/components/blocks/section"
 import { DataTable } from "@/components/blocks/data-table"
-import { ComplianceBadge } from "@/components/blocks/compliance-badge"
+import { CompanyBadge } from "@/components/blocks/company-badge"
 
 export default async function CompanyPage({
   params,
@@ -25,11 +22,34 @@ export default async function CompanyPage({
   const company = getCompany(companyId)
   if (!company) notFound()
 
-  const products = getProductsForCompany(companyId)
-  const allIngredientIds = new Set(products.flatMap((p) => p.ingredient_ids))
-  const ingredients = [...allIngredientIds].map((id) => getIngredient(id)).filter((x): x is NonNullable<typeof x> => x != null)
-  const supplierIds = new Set(ingredients.flatMap((i) => i.supplier_ids))
-  const { sharedWith, sharedIngredients } = getIngredientOverlapScore(companyId)
+  const products = getFinishedGoodsForCompany(companyId)
+
+  const rawMaterialIds = new Set<string>()
+  for (const p of products) {
+    for (const rm of getRawMaterialsForProduct(p.id)) {
+      rawMaterialIds.add(rm.id)
+    }
+  }
+
+  const supplierIds = new Set<string>()
+  for (const rmId of rawMaterialIds) {
+    for (const s of getSuppliersForRawMaterial(rmId)) {
+      supplierIds.add(s.id)
+    }
+  }
+
+  const sharedCompanyIds = new Set<string>()
+  let sharedRawMaterialCount = 0
+  for (const rmId of rawMaterialIds) {
+    const others = getCompaniesUsingRawMaterial(rmId).filter((c) => c.id !== companyId)
+    if (others.length > 0) {
+      sharedRawMaterialCount++
+      others.forEach((c) => sharedCompanyIds.add(c.id))
+    }
+  }
+  const sharedCompanies = [...sharedCompanyIds]
+    .map((id) => getCompany(id))
+    .filter((c): c is NonNullable<typeof c> => c != null)
 
   return (
     <AppShell>
@@ -48,118 +68,46 @@ export default async function CompanyPage({
       <StatsStrip
         className="mt-6"
         stats={[
-          { label: "Products", value: products.length },
-          { label: "Unique ingredients", value: allIngredientIds.size },
+          { label: "Finished goods", value: products.length },
+          { label: "Raw materials", value: rawMaterialIds.size },
           { label: "Suppliers", value: supplierIds.size },
-          { label: "Shared ingredients", value: sharedIngredients },
+          { label: "Portfolio overlap", value: sharedCompanies.length },
         ]}
       />
 
-      <ZoneSection zone={1} title="Products">
+      <Section title="Finished goods">
         <DataTable
           columns={[
-            { key: "name", label: "Product", render: (p) => p.name },
+            { key: "sku", label: "SKU", render: (p) => <code className="font-mono text-xs">{p.sku}</code> },
             {
-              key: "ingredients",
-              label: "Ingredients",
-              render: (p) => p.ingredient_ids.length,
-            },
-            {
-              key: "compliance",
-              label: "Compliance tags",
-              render: (p) => (
-                <div className="flex flex-wrap gap-1">
-                  {p.compliance_tags.map((tag) => (
-                    <ComplianceBadge key={tag} tag={tag} />
-                  ))}
-                </div>
-              ),
+              key: "rms",
+              label: "Raw materials",
+              render: (p) => getRawMaterialsForProduct(p.id).length,
             },
           ]}
           rows={products}
           getRowHref={(p) => `/products/${p.id}`}
         />
-      </ZoneSection>
+      </Section>
 
-      <ZoneSection zone={2} title="Ingredient overlap with portfolio">
-        <div className="rounded-lg border border-border bg-card p-4 text-sm">
-          <p>
-            <strong>{company.name}</strong> shares{" "}
-            <strong>{sharedIngredients} ingredient{sharedIngredients !== 1 ? "s" : ""}</strong> with{" "}
-            <strong>{sharedWith} other portfolio compan{sharedWith !== 1 ? "ies" : "y"}</strong>.
-          </p>
-          <p className="mt-2 text-muted-foreground">
-            These shared ingredients represent consolidation and substitution opportunities.{" "}
-            <Link href="/" className="underline hover:text-foreground">
-              View portfolio-level opportunities →
-            </Link>
-          </p>
-        </div>
-
-        <div className="mt-4">
-          <DataTable
-            columns={[
-              { key: "ingredient", label: "Ingredient", render: (i) => i.canonical_name },
-              {
-                key: "sharedWith",
-                label: "Also used by",
-                render: (i) => {
-                  const others = getCompaniesUsingIngredient(i.id).filter((c) => c.id !== companyId)
-                  return others.length > 0
-                    ? others.map((c) => c.name).join(", ")
-                    : <span className="text-muted-foreground">Only this company</span>
-                },
-              },
-              {
-                key: "supplier",
-                label: "Current supplier",
-                render: (i) => {
-                  const s = getSupplierForCompanyIngredient(companyId, i.id)
-                  return s ? s.name : <span className="text-muted-foreground">—</span>
-                },
-              },
-            ]}
-            rows={ingredients}
-            getRowHref={(i) => `/ingredients/${i.id}`}
-          />
-        </div>
-      </ZoneSection>
-
-      <ZoneSection zone={3} title="Supplier overview">
-        <DataTable
-          columns={[
-            {
-              key: "name",
-              label: "Supplier",
-              render: (s) => s.name,
-            },
-            {
-              key: "certs",
-              label: "Certifications",
-              render: (s) => (
-                <div className="flex flex-wrap gap-1">
-                  {s.certifications.map((c) => (
-                    <ComplianceBadge key={c} tag={c} />
-                  ))}
-                </div>
-              ),
-            },
-            {
-              key: "portfolio",
-              label: "Portfolio-wide",
-              render: (s) =>
-                s.served_companies.length > 1 ? (
-                  <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                    Shared ({s.served_companies.length} cos.)
-                  </span>
-                ) : (
-                  <span className="text-xs text-muted-foreground">Unique</span>
-                ),
-            },
-          ]}
-          rows={[...supplierIds].map((id) => getSupplier(id)).filter((x): x is NonNullable<typeof x> => x != null)}
-        />
-      </ZoneSection>
+      <Section title="Shared with portfolio companies">
+        {sharedCompanies.length > 0 ? (
+          <div className="rounded-lg border border-border bg-card p-5">
+            <p className="text-sm text-muted-foreground mb-4">
+              Shared with{" "}
+              <strong>{sharedCompanies.length} other portfolio compan{sharedCompanies.length !== 1 ? "ies" : "y"}</strong>{" "}
+              via <strong>{sharedRawMaterialCount} raw material{sharedRawMaterialCount !== 1 ? "s" : ""}</strong>.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {sharedCompanies.map((c) => (
+                <CompanyBadge key={c.id} id={c.id} name={c.name} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No shared raw materials with other portfolio companies.</p>
+        )}
+      </Section>
     </AppShell>
   )
 }
