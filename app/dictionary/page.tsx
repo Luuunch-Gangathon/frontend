@@ -1,15 +1,14 @@
 import Link from "next/link"
-import { getCompanies, getProducts, getRawMaterials, getSuppliers, getSubstitutions } from "@/lib/api"
+import { getCompanies, getProducts, getRawMaterials, getSuppliers } from "@/lib/api"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 
 export default async function DictionaryPage() {
-  const [companies, products, rawMaterials, suppliers, substitutions] = await Promise.all([
+  const [companies, products, rawMaterials, suppliers] = await Promise.all([
     getCompanies(),
     getProducts(),
     getRawMaterials(),
     getSuppliers(),
-    getSubstitutions(),
   ])
 
   const sections = [
@@ -17,7 +16,6 @@ export default async function DictionaryPage() {
     { label: "Products", count: products.length, href: "/dictionary/products", description: "Finished goods across all portfolio companies" },
     { label: "Raw Materials", count: rawMaterials.length, href: "/dictionary/raw-materials", description: "Excipients and active pharmaceutical inputs" },
     { label: "Suppliers", count: suppliers.length, href: "/dictionary/suppliers", description: "Qualified raw material suppliers" },
-    { label: "Substitutions", count: substitutions.length, href: "/dictionary/substitutions", description: "Known functionally-equivalent raw material swaps" },
   ]
 
   return (
@@ -27,7 +25,7 @@ export default async function DictionaryPage() {
       <div className="mt-4">
         <h1 className="text-2xl font-semibold">Dictionary</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Reference data — companies, products, raw materials, suppliers, and substitutions.
+          Reference data — companies, products, raw materials, and suppliers.
         </p>
       </div>
 

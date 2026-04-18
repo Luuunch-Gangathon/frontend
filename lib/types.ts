@@ -1,6 +1,4 @@
 // Hand-maintained domain type facade.
-// TODO: once backend publishes new schemas, re-run `yarn gen:types` and swap
-// each interface below to `type Foo = S['Foo']` from ./types.generated.
 
 // ─── Core entities ────────────────────────────────────────────────────────────
 
@@ -18,6 +16,8 @@ export interface Product {
 export interface RawMaterial {
   id: number
   sku: string
+  suppliers_count?: number
+  used_products_count?: number
 }
 
 export interface Supplier {
@@ -31,57 +31,47 @@ export interface BOM {
   consumed_raw_material_ids: number[]
 }
 
-export interface SupplierRawMaterial {
-  supplier_id: number
-  raw_material_id: number
+// ─── Tool results ─────────────────────────────────────────────────────────────
+
+export interface SearchHit {
+  raw_material_name: string
+  raw_material_id?: number | null
+  similarity: number
+  spec?: Record<string, unknown> | null
+  companies: string[]
+  suppliers: string[]
 }
 
-// ─── Substitutions ────────────────────────────────────────────────────────────
-
-export interface Substitution {
-  id: number
-  from_raw_material_id: number
-  to_raw_material_id: number
-  reason: string
+export interface ComplianceMatch {
+  raw_material_id?: number | null
+  raw_material_name: string
+  score: number
+  reasoning: string
+  similarity: number
+  companies_affected: string[]
+  suppliers: string[]
 }
 
-// ─── Proposals ────────────────────────────────────────────────────────────────
-
-export type ProposalKind = 'optimization' | 'substitution'
-
-export interface EvidenceItem {
-  claim: string
-  source: string
-  url?: string | null
-  confidence?: 'high' | 'medium' | 'low'
-  source_type?: 'internal' | 'supplier' | 'regulator' | 'industry'
+export interface ToolCall {
+  name: 'search' | 'similarity_compliance_check' | 'web_search_enrich'
+  arguments: Record<string, unknown>
+  result: SearchHit[] | ComplianceMatch[] | string[]
 }
 
-export interface ComplianceRequirement {
-  label: string
-  status: 'met' | 'gap' | 'partial'
-  note?: string | null
+// ─── Chat messages ────────────────────────────────────────────────────────────
+
+export interface UserMessage {
+  role: 'user'
+  content: string
 }
 
-export interface Proposal {
-  id: number
-  kind: ProposalKind
-  headline: string
-  summary: string
-  raw_material_id: number
-  proposed_action: string
-  companies_involved: number[]
-  current_suppliers: number[]
-  proposed_supplier_id?: number | null
-  proposed_substitute_raw_material_id?: number | null
-  fragmentation_score: number
-  tradeoffs: { gained: string[]; atRisk: string[] }
-  conservative: { affected_skus: string[]; timeline: string }
-  aggressive: { affected_skus: string[]; timeline: string }
-  evidence: EvidenceItem[]
-  estimated_impact: string
-  compliance_requirements: ComplianceRequirement[]
+export interface AssistantMessage {
+  role: 'assistant'
+  content: string
+  tool_calls: ToolCall[]
 }
+
+export type ChatMessage = UserMessage | AssistantMessage
 
 // ─── Agnes ────────────────────────────────────────────────────────────────────
 
@@ -92,27 +82,37 @@ export interface AgnesMessage {
   cited_evidence_indices?: number[]
 }
 
-export interface AgnesSuggestedQuestion {
-  id: number
-  question: string
-}
-
 export interface AgnesAskRequest {
-  proposal_id: number
   message: string
   session_id?: string | null
+  product_id?: number | null
 }
 
 export interface AgnesAskResponse {
   reply: AgnesMessage
   session_id: string
+  tool_calls: ToolCall[]
 }
 
-// ─── Tuning (v2: deferred post-hackathon) ────────────────────────────────────
-// export interface SupplierAllocation {
-//   supplier_id: number
-//   raw_material_id: number
-//   quantity_kg: number
-// }
-// export interface TuningRequest { allocations: SupplierAllocation[] }
-// export interface TuningResponse { allocations: SupplierAllocation[]; proposals: Proposal[] }
+// ─── Decisions ────────────────────────────────────────────────────────────────
+
+export interface DecisionCreate {
+  session_id: string
+  status: 'accepted' | 'declined'
+  original_raw_material_name: string
+  substitute_raw_material_name: string
+  product_sku?: string
+  score: number
+  reasoning: string
+}
+
+export interface Decision {
+  id: number
+  session_id: string
+  status: string
+  original_raw_material_name: string
+  substitute_raw_material_name: string
+  product_sku?: string | null
+  score: number
+  reasoning: string
+}
