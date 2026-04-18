@@ -1,115 +1,134 @@
-'use client';
-
-import { useState } from 'react';
-import { getIngredients } from '@/lib/api';
-import { API_BASE_URL } from '@/lib/env';
-
-type Status = 'idle' | 'loading' | 'ok' | 'error';
-
-interface Result {
-  label: string;
-  status: Status;
-  data: unknown;
-  error: string | null;
-}
-
-const INIT: Result = { label: '', status: 'idle', data: null, error: null };
+import {
+  getPortfolioStats,
+  getTopConsolidationOpportunities,
+  getTopSubstitutionOpportunities,
+} from "@/lib/demo-data"
+import { AppShell } from "@/components/layout/app-shell"
+import { StatsStrip } from "@/components/blocks/stats-strip"
+import { ZoneSection } from "@/components/blocks/zone-section"
+import { DataTable } from "@/components/blocks/data-table"
+import { FragmentationBadge } from "@/components/blocks/fragmentation-badge"
 
 export default function Home() {
-  const [result, setResult] = useState<Result>(INIT);
-
-  async function run(label: string, fn: () => Promise<unknown>) {
-    setResult({ label, status: 'loading', data: null, error: null });
-    try {
-      const data = await fn();
-      setResult({ label, status: 'ok', data, error: null });
-    } catch (err) {
-      setResult({
-        label,
-        status: 'error',
-        data: null,
-        error: err instanceof Error ? err.message : String(err),
-      });
-    }
-  }
-
-  async function health() {
-    const res = await fetch(`${API_BASE_URL}/health`, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    return res.json();
-  }
-
-  const buttons: { label: string; onClick: () => void }[] = [
-    { label: 'GET /health', onClick: () => run('GET /health', health) },
-    { label: 'GET /ingredients', onClick: () => run('GET /ingredients', () => getIngredients()) },
-    {
-      label: 'GET /ingredients?name=lecithin&company_id=co_1',
-      onClick: () =>
-        run('GET /ingredients (filtered)', () =>
-          getIngredients({ name: 'lecithin', company_id: 'co_1' }),
-        ),
-    },
-  ];
+  const stats = getPortfolioStats()
+  const consolidationOpps = getTopConsolidationOpportunities()
+  const substitutionOpps = getTopSubstitutionOpportunities()
 
   return (
-    <div className="min-h-screen bg-zinc-50 font-sans dark:bg-black">
-      <main className="mx-auto max-w-5xl px-6 py-10">
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
-            API endpoint tester
-          </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Backend: <code className="font-mono">{API_BASE_URL}</code>
-          </p>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
-            Template page — add a button here each time the backend team ships a new endpoint.
-          </p>
-        </header>
+    <AppShell>
+      <div>
+        <h1 className="text-2xl font-semibold">Spherecast</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Supply chain co-pilot across {stats.companies} portfolio companies
+        </p>
+      </div>
 
-        <section className="mb-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {buttons.map((b) => (
-            <button
-              key={b.label}
-              onClick={b.onClick}
-              className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-left text-sm font-mono text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-900"
-            >
-              {b.label}
-            </button>
-          ))}
-        </section>
+      <StatsStrip
+        className="mt-6"
+        stats={[
+          { label: "Portfolio companies", value: stats.companies },
+          { label: "Ingredients tracked", value: stats.ingredients },
+          { label: "Suppliers", value: stats.suppliers },
+          { label: "Open consolidation opps", value: stats.consolidationOpps },
+        ]}
+      />
 
-        <section className="rounded-md border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-          <div className="mb-2 flex items-center justify-between">
-            <div className="text-sm text-zinc-600 dark:text-zinc-400">
-              {result.label || 'No request yet'}
-            </div>
-            <StatusBadge status={result.status} />
-          </div>
+      <ZoneSection zone={2} title="Top consolidation opportunities">
+        <DataTable
+          columns={[
+            {
+              key: "ingredient",
+              label: "Ingredient",
+              render: (row) => (
+                <span className="font-medium">{row.ingredient.canonical_name}</span>
+              ),
+            },
+            {
+              key: "companies",
+              label: "# Companies",
+              render: (row) => row.companies,
+            },
+            {
+              key: "suppliers",
+              label: "# Suppliers",
+              render: (row) => row.suppliers,
+            },
+            {
+              key: "fragmentation",
+              label: "Fragmentation",
+              render: (row) => <FragmentationBadge score={row.fragmentation_score} />,
+            },
+            {
+              key: "proposed",
+              label: "Proposed supplier",
+              render: (row) => (
+                <span className="text-sm text-muted-foreground">{row.proposed_supplier.name}</span>
+              ),
+            },
+          ]}
+          rows={consolidationOpps}
+          getRowHref={(row) => `/ingredients/${row.ingredient.id}/consolidate`}
+        />
+      </ZoneSection>
 
-          {result.error && (
-            <pre className="overflow-auto rounded bg-red-50 p-3 text-xs text-red-700 dark:bg-red-950 dark:text-red-300">
-              {result.error}
-            </pre>
-          )}
+      <ZoneSection zone={2} title="Top substitution opportunities">
+        <DataTable
+          columns={[
+            {
+              key: "from",
+              label: "Current ingredient",
+              render: (row) => <span className="font-medium">{row.from.canonical_name}</span>,
+            },
+            {
+              key: "to",
+              label: "Proposed substitute",
+              render: (row) => (
+                <span className="text-sm">{row.to.canonical_name}</span>
+              ),
+            },
+            {
+              key: "skus",
+              label: "# SKUs",
+              render: (row) => row.affected_skus,
+            },
+            {
+              key: "confidence",
+              label: "Confidence",
+              render: (row) => (
+                <span className="font-medium">{row.confidence}%</span>
+              ),
+            },
+            {
+              key: "compliance",
+              label: "Compliance delta",
+              render: (row) => (
+                <span className="text-xs text-muted-foreground line-clamp-2 max-w-xs">
+                  {row.compliance_delta.slice(0, 70)}…
+                </span>
+              ),
+            },
+          ]}
+          rows={substitutionOpps}
+          getRowHref={(row) => `/ingredients/${row.from.id}/substitute`}
+        />
+      </ZoneSection>
 
-          {result.data != null && (
-            <pre className="max-h-[60vh] overflow-auto rounded bg-zinc-50 p-3 text-xs text-zinc-900 dark:bg-black dark:text-zinc-100">
-              {JSON.stringify(result.data, null, 2)}
-            </pre>
-          )}
-        </section>
-      </main>
-    </div>
-  );
-}
-
-function StatusBadge({ status }: { status: Status }) {
-  const map: Record<Status, { label: string; cls: string }> = {
-    idle: { label: 'idle', cls: 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' },
-    loading: { label: 'loading…', cls: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' },
-    ok: { label: 'ok', cls: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' },
-    error: { label: 'error', cls: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300' },
-  };
-  const { label, cls } = map[status];
-  return <span className={`rounded px-2 py-0.5 text-xs font-medium ${cls}`}>{label}</span>;
+      <ZoneSection zone={3} title="Ask Agent">
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 opacity-60">
+          <input
+            disabled
+            placeholder="Ask about consolidation opportunities, compliance gaps, supplier risks…"
+            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground cursor-not-allowed"
+          />
+          <button
+            disabled
+            className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground opacity-50 cursor-not-allowed"
+          >
+            Ask
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">Agent interface coming soon.</p>
+      </ZoneSection>
+    </AppShell>
+  )
 }
