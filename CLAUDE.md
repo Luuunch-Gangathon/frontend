@@ -27,14 +27,10 @@ to see real changes.
   names (`RawMaterial`, `Proposal`, …). Add a line here whenever the backend
   adds a schema you want to consume by its short name.
 - **`lib/api.ts`** — one typed function per endpoint (`getRawMaterials` is the
-  canonical pattern). Shared `ApiError` + `req<T>()` helper + mocks toggle.
-- **`lib/mocks.ts`** — path-keyed fixture responses gated by
-  `NEXT_PUBLIC_USE_MOCKS=1`. Extend alongside new endpoints.
+  canonical pattern). Shared `ApiError` + `req<T>()` helper.
 - **`app/page.tsx`** — proposals dashboard (the demo's main surface).
 
 ## Contract integration notes
-- Toggle live vs. mocked backend: `NEXT_PUBLIC_USE_MOCKS=1` in `.env.local`
-  routes through `lib/mocks.ts`.
 - `API_BASE_URL` defaults to `http://localhost:8000` (`lib/env.ts`).
 
 ## Run locally
