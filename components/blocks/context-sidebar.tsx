@@ -7,7 +7,7 @@ import {
   getCompanies,
   getSuppliers,
   getRawMaterialSubstitutes,
-  scoreSubstituteCandidate,
+  scoreSubstituteCandidates,
 } from '@/lib/api'
 import { ScoreBadge } from './score-badge'
 import { SkuText } from './sku-text'
@@ -88,25 +88,41 @@ export function ContextSidebar({ aggregated, activeTab, onTabChange, hasAnyToolC
       })
   }
 
-  const fetchProposal = (originalRmId: number, candidateRmId: number) => {
-    const key = candidateKey(originalRmId, candidateRmId)
+  const fetchProposals = (originalRmId: number, candidateRmIds: number[]) => {
+    if (candidateRmIds.length === 0) return
     setProposalStates((prev) => {
       const next = new Map(prev)
-      next.set(key, { status: 'loading' })
+      for (const cid of candidateRmIds) {
+        next.set(candidateKey(originalRmId, cid), { status: 'loading' })
+      }
       return next
     })
-    scoreSubstituteCandidate(productId, originalRmId, candidateRmId)
-      .then((proposal) => {
+    scoreSubstituteCandidates(productId, originalRmId, candidateRmIds)
+      .then((proposals) => {
+        const byId = new Map(proposals.map((p) => [p.id, p]))
         setProposalStates((prev) => {
           const next = new Map(prev)
-          next.set(key, { status: 'loaded', proposal })
+          for (const cid of candidateRmIds) {
+            const key = candidateKey(originalRmId, cid)
+            const proposal = byId.get(cid)
+            if (proposal) {
+              next.set(key, { status: 'loaded', proposal })
+            } else {
+              next.set(key, { status: 'error', message: 'Compliance check failed.' })
+            }
+          }
           return next
         })
       })
       .catch(() => {
         setProposalStates((prev) => {
           const next = new Map(prev)
-          next.set(key, { status: 'error', message: 'Compliance check failed.' })
+          for (const cid of candidateRmIds) {
+            next.set(candidateKey(originalRmId, cid), {
+              status: 'error',
+              message: 'Compliance check failed.',
+            })
+          }
           return next
         })
       })
@@ -159,7 +175,7 @@ export function ContextSidebar({ aggregated, activeTab, onTabChange, hasAnyToolC
             substitutesStates={substitutesStates}
             proposalStates={proposalStates}
             onFetchSubstitutes={fetchSubstitutes}
-            onFetchProposal={fetchProposal}
+            onFetchProposals={fetchProposals}
           />
         )}
         {activeTab === 'companies' && (
@@ -196,7 +212,7 @@ interface MaterialsListProps {
   substitutesStates: Map<number, SubstitutesState>
   proposalStates: Map<string, ProposalState>
   onFetchSubstitutes: (rawMaterialId: number) => void
-  onFetchProposal: (originalRmId: number, candidateRmId: number) => void
+  onFetchProposals: (originalRmId: number, candidateRmIds: number[]) => void
 }
 
 function MaterialsList({
@@ -206,7 +222,7 @@ function MaterialsList({
   substitutesStates,
   proposalStates,
   onFetchSubstitutes,
-  onFetchProposal,
+  onFetchProposals,
 }: MaterialsListProps) {
   if (!hasToolCalls) {
     return (
@@ -223,7 +239,7 @@ function MaterialsList({
                 substitutesState={substitutesStates.get(m.id) ?? { status: 'idle' }}
                 proposalStates={proposalStates}
                 onFetchSubstitutes={onFetchSubstitutes}
-                onFetchProposal={onFetchProposal}
+                onFetchProposals={onFetchProposals}
               />
             ))}
             <Link
@@ -251,7 +267,7 @@ function MaterialsList({
           substitutesState={m.id != null ? substitutesStates.get(m.id) ?? { status: 'idle' } : undefined}
           proposalStates={proposalStates}
           onFetchSubstitutes={onFetchSubstitutes}
-          onFetchProposal={onFetchProposal}
+          onFetchProposals={onFetchProposals}
         />
       ))}
     </div>
@@ -263,13 +279,13 @@ function BrowseMaterialRow({
   substitutesState,
   proposalStates,
   onFetchSubstitutes,
-  onFetchProposal,
+  onFetchProposals,
 }: {
   material: RawMaterial
   substitutesState: SubstitutesState
   proposalStates: Map<string, ProposalState>
   onFetchSubstitutes: (rawMaterialId: number) => void
-  onFetchProposal: (originalRmId: number, candidateRmId: number) => void
+  onFetchProposals: (originalRmId: number, candidateRmIds: number[]) => void
 }) {
   const [open, setOpen] = useState(false)
   const handleClick = () => {
@@ -279,9 +295,9 @@ function BrowseMaterialRow({
   return (
     <div className="rounded-md hover:bg-muted/50 transition-colors">
       <div className="flex items-center gap-2 px-2 py-1.5">
-        <Link href={`/raw-materials/${material.id}`} className="flex-1 min-w-0 text-xs">
-          <span className="font-mono text-foreground truncate">{material.sku}</span>
-        </Link>
+        <span className="flex-1 min-w-0 text-xs font-mono text-foreground truncate">
+          {material.sku}
+        </span>
         <SubstitutesToggle state={substitutesState} open={open} onClick={handleClick} />
       </div>
       {open && (
@@ -290,7 +306,7 @@ function BrowseMaterialRow({
           originalRmId={material.id}
           proposalStates={proposalStates}
           onRetry={() => onFetchSubstitutes(material.id)}
-          onFetchProposal={onFetchProposal}
+          onFetchProposals={onFetchProposals}
         />
       )}
     </div>
@@ -302,13 +318,13 @@ function MaterialRow({
   substitutesState,
   proposalStates,
   onFetchSubstitutes,
-  onFetchProposal,
+  onFetchProposals,
 }: {
   material: AggregatedMaterial
   substitutesState: SubstitutesState | undefined
   proposalStates: Map<string, ProposalState>
   onFetchSubstitutes: (rawMaterialId: number) => void
-  onFetchProposal: (originalRmId: number, candidateRmId: number) => void
+  onFetchProposals: (originalRmId: number, candidateRmIds: number[]) => void
 }) {
   const [open, setOpen] = useState(false)
 
@@ -329,9 +345,6 @@ function MaterialRow({
     </div>
   )
 
-  const metaWithLink =
-    m.id != null ? <Link href={`/raw-materials/${m.id}`} className="flex-1 min-w-0">{meta}</Link> : meta
-
   const handleClick = () => {
     if (m.id == null) return
     if (substitutesState?.status === 'idle') onFetchSubstitutes(m.id)
@@ -341,7 +354,7 @@ function MaterialRow({
   return (
     <div className="rounded-md hover:bg-muted/50 transition-colors">
       <div className="flex items-start gap-2 px-2 py-2">
-        {metaWithLink}
+        {meta}
         {m.id != null && substitutesState && (
           <SubstitutesToggle state={substitutesState} open={open} onClick={handleClick} />
         )}
@@ -352,7 +365,7 @@ function MaterialRow({
           originalRmId={m.id}
           proposalStates={proposalStates}
           onRetry={() => m.id != null && onFetchSubstitutes(m.id)}
-          onFetchProposal={onFetchProposal}
+          onFetchProposals={onFetchProposals}
         />
       )}
     </div>
@@ -439,13 +452,13 @@ function SubstitutesPanel({
   originalRmId,
   proposalStates,
   onRetry,
-  onFetchProposal,
+  onFetchProposals,
 }: {
   state: SubstitutesState
   originalRmId: number
   proposalStates: Map<string, ProposalState>
   onRetry: () => void
-  onFetchProposal: (originalRmId: number, candidateRmId: number) => void
+  onFetchProposals: (originalRmId: number, candidateRmIds: number[]) => void
 }) {
   if (state.status === 'idle') return null
 
@@ -494,7 +507,7 @@ function SubstitutesPanel({
   })
 
   const handleCheckAll = () => {
-    for (const c of pending) onFetchProposal(originalRmId, c.id)
+    onFetchProposals(originalRmId, pending.map((c) => c.id))
   }
 
   return (
@@ -527,7 +540,7 @@ function SubstitutesPanel({
             originalRmId={originalRmId}
             candidate={c}
             state={proposalStates.get(candidateKey(originalRmId, c.id)) ?? { status: 'idle' }}
-            onFetchProposal={onFetchProposal}
+            onFetchProposals={onFetchProposals}
           />
         ))}
       </ul>
@@ -539,16 +552,16 @@ function CandidateRow({
   originalRmId,
   candidate,
   state,
-  onFetchProposal,
+  onFetchProposals,
 }: {
   originalRmId: number
   candidate: SubstituteCandidate
   state: ProposalState
-  onFetchProposal: (originalRmId: number, candidateRmId: number) => void
+  onFetchProposals: (originalRmId: number, candidateRmIds: number[]) => void
 }) {
   const [open, setOpen] = useState(false)
   const handleClick = () => {
-    if (state.status === 'idle') onFetchProposal(originalRmId, candidate.id)
+    if (state.status === 'idle') onFetchProposals(originalRmId, [candidate.id])
     setOpen((v) => !v)
   }
   const loading = state.status === 'loading'
@@ -617,7 +630,7 @@ function CandidateRow({
       {open && (
         <CandidateProposalDetail
           state={state}
-          onRetry={() => onFetchProposal(originalRmId, candidate.id)}
+          onRetry={() => onFetchProposals(originalRmId, [candidate.id])}
         />
       )}
     </li>
@@ -657,11 +670,10 @@ function CandidateProposalDetail({
   const { proposal } = state
   return (
     <div className="mx-2 mb-2 rounded-md border border-border bg-card p-2 space-y-1.5">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2">
         <span className="text-[10px] uppercase tracking-wide font-medium text-muted-foreground">
           Compliance reasoning
         </span>
-        <ScoreBadge score={proposal.score} />
       </div>
       <p className="text-xs leading-relaxed text-foreground/90">
         <SkuText>{proposal.reasoning}</SkuText>

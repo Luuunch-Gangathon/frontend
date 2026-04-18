@@ -130,13 +130,17 @@ export function getComplianceForMaterial(
   return req<ComplianceResult>(`/compliance/${productId}/${rawMaterialId}`);
 }
 
-export function scoreSubstituteCandidate(
+export function scoreSubstituteCandidates(
   productId: number,
   originalRmId: number,
-  candidateRmId: number,
-): Promise<SubstituteProposal> {
-  return req<SubstituteProposal>(
-    `/compliance/${productId}/${originalRmId}/candidates/${candidateRmId}`,
+  candidateRmIds: number[],
+): Promise<SubstituteProposal[]> {
+  return req<SubstituteProposal[]>(
+    `/compliance/${productId}/${originalRmId}/candidates`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ candidate_ids: candidateRmIds }),
+    },
   );
 }
 
