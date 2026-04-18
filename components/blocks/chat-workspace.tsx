@@ -35,8 +35,6 @@ export function ChatWorkspace() {
     [messages]
   )
 
-  const hasUserMessage = useMemo(() => messages.some((m) => m.role === 'user'), [messages])
-
   useEffect(() => {
     const prevLen = prevMsgLengthRef.current
     prevMsgLengthRef.current = messages.length
@@ -77,17 +75,16 @@ export function ChatWorkspace() {
       const trimmed = text.trim()
       if (!trimmed || isLoading || !selectedProduct) return
 
-      const isFirst = !hasUserMessage
-      const apiMessage = isFirst
-        ? `Context: We are discussing finished-good product "${selectedProduct.sku}" made by "${productCompany}" (product_id=${selectedProduct.id}).\n\nUser question: ${trimmed}`
-        : trimmed
-
       setMessages((prev) => [...prev, { role: 'user', content: trimmed }])
       setInput('')
       setIsLoading(true)
 
       try {
-        const res = await askAgnes({ message: apiMessage, session_id: sessionId })
+        const res = await askAgnes({
+          message: trimmed,
+          session_id: sessionId,
+          product_id: sessionId ? null : selectedProduct.id,
+        })
         setSessionId(res.session_id)
         setMessages((prev) => [
           ...prev,
@@ -106,7 +103,7 @@ export function ChatWorkspace() {
         setIsLoading(false)
       }
     },
-    [isLoading, sessionId, selectedProduct, productCompany, hasUserMessage]
+    [isLoading, sessionId, selectedProduct]
   )
 
   function handleDecision(key: string, status: 'accepted' | 'declined') {

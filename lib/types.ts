@@ -85,6 +85,7 @@ export interface AgnesMessage {
 export interface AgnesAskRequest {
   message: string
   session_id?: string | null
+  product_id?: number | null
 }
 
 export interface AgnesAskResponse {
