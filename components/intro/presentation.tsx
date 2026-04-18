@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { SlideShell } from './slide-shell'
+import { Team } from './slides/team'
 import { BrandReveal } from './slides/brand-reveal'
 import { Problem } from './slides/problem'
 import { Benchmarks } from './slides/benchmarks'
@@ -10,7 +11,7 @@ import { Architecture } from './slides/architecture'
 import { FeatureTeaser } from './slides/feature-teaser'
 import { MacbookReveal } from './slides/macbook-reveal'
 
-const SLIDE_COUNT = 6
+const SLIDE_COUNT = 7
 
 export function Presentation() {
   const router = useRouter()
@@ -68,27 +69,31 @@ export function Presentation() {
       onClick={next}
     >
       <SlideShell active={current === 0}>
-        <BrandReveal active={current === 0} onExit={exit} />
+        <Team active={current === 0} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 1}>
-        <Problem active={current === 1} onExit={exit} />
+        <BrandReveal active={current === 1} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 2}>
-        <Benchmarks active={current === 2} onExit={exit} />
+        <Problem active={current === 2} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 3}>
-        <Architecture active={current === 3} onExit={exit} />
+        <Benchmarks active={current === 3} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 4}>
-        <FeatureTeaser active={current === 4} />
+        <Architecture active={current === 4} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 5}>
-        <MacbookReveal active={current === 5} zooming={isZooming} onLaunch={zoomToApp} />
+        <FeatureTeaser active={current === 5} />
+      </SlideShell>
+
+      <SlideShell active={current === 6}>
+        <MacbookReveal active={current === 6} zooming={isZooming} onLaunch={zoomToApp} />
       </SlideShell>
 
       {/* Progress bars — hidden while zooming */}

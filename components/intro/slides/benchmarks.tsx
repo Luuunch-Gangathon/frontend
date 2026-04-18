@@ -57,7 +57,7 @@ export function Benchmarks({ active }: BenchmarksProps) {
             transition: 'opacity 0.6s ease 0ms, transform 0.6s ease 0ms',
           }}
         >
-          <p className="text-[12px] uppercase tracking-[0.22em] text-white/35 font-mono mb-3">
+          <p className="text-[12px] uppercase tracking-[0.22em] text-white/65 font-mono mb-3">
             Benchmarks
           </p>
           <h2
@@ -82,7 +82,7 @@ export function Benchmarks({ active }: BenchmarksProps) {
             >
               {/* Icon chip */}
               <div
-                className="w-12 h-12 rounded-full flex items-center justify-center font-mono text-white/70 text-xl"
+                className="w-12 h-12 rounded-full flex items-center justify-center font-mono text-white/90 text-xl"
                 style={{ background: 'oklch(0.28 0.06 264)' }}
               >
                 {metric.glyph}
@@ -98,14 +98,14 @@ export function Benchmarks({ active }: BenchmarksProps) {
 
               {/* Label */}
               <p
-                className="text-center text-white/40 uppercase tracking-[0.2em]"
+                className="text-center text-white/70 uppercase tracking-[0.2em]"
                 style={{ fontSize: '13px' }}
               >
                 {metric.label}
               </p>
 
               {/* Caption */}
-              <p className="text-center text-white/60 text-base leading-snug">{metric.caption}</p>
+              <p className="text-center text-white/80 text-base leading-snug">{metric.caption}</p>
 
               {/* Accent bar */}
               <div

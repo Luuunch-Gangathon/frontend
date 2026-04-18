@@ -33,7 +33,7 @@ export function FeatureTeaser({ active }: FeatureTeaserProps) {
         {QUOTES.map((q, i) => (
           <p
             key={i}
-            className="text-[clamp(1rem,1.55vw,1.25rem)] font-medium text-white/75 leading-snug"
+            className="text-[clamp(1rem,1.55vw,1.25rem)] font-medium text-white/90 leading-snug"
             style={{
               opacity: i < visibleQuotes ? 1 : 0,
               transform: i < visibleQuotes ? 'translateX(0)' : 'translateX(-14px)',
@@ -63,7 +63,7 @@ export function FeatureTeaser({ active }: FeatureTeaserProps) {
             <div className="w-3 h-3 rounded-full bg-white/15" />
             <div className="w-3 h-3 rounded-full bg-white/15" />
           </div>
-          <span className="ml-3 text-xs text-white/30 font-mono tracking-wide">
+          <span className="ml-3 text-xs text-white/60 font-mono tracking-wide">
             spherecast · supply chain co-pilot
           </span>
         </div>
@@ -73,7 +73,7 @@ export function FeatureTeaser({ active }: FeatureTeaserProps) {
           {/* User message */}
           <div className="flex gap-2.5 items-start">
             <div className="w-7 h-7 rounded-full bg-white/10 shrink-0 mt-0.5" />
-            <div className="rounded-lg bg-white/6 border border-white/8 px-4 py-2.5 text-base text-white/65 max-w-sm">
+            <div className="rounded-lg bg-white/6 border border-white/8 px-4 py-2.5 text-base text-white/85 max-w-sm">
               Which raw material can replace Titanium Dioxide in our EU products?
             </div>
           </div>

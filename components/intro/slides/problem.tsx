@@ -52,7 +52,7 @@ export function Problem({ active }: ProblemProps) {
       {/* Left: headline stack */}
       <div className="relative z-10 flex-1 flex flex-col justify-center gap-8 pl-[10%] max-w-[55%]">
         <p
-          className="text-[12px] uppercase tracking-[0.2em] text-white/35 font-mono"
+          className="text-[12px] uppercase tracking-[0.2em] text-white/65 font-mono"
           style={{
             opacity: active ? 1 : 0,
             transform: active ? 'translateY(0)' : 'translateY(16px)',
@@ -75,7 +75,7 @@ export function Problem({ active }: ProblemProps) {
         </h1>
 
         <p
-          className="text-white/55 leading-relaxed"
+          className="text-white/80 leading-relaxed"
           style={{
             fontSize: 'clamp(1.2rem, 2.1vw, 1.6rem)',
             opacity: active ? 1 : 0,
@@ -116,12 +116,12 @@ export function Problem({ active }: ProblemProps) {
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-white/25 text-base w-5 shrink-0 text-center">
+                  <span className="font-mono text-white/55 text-base w-5 shrink-0 text-center">
                     {card.icon}
                   </span>
-                  <span className="font-mono text-sm text-white/65 truncate">{card.name}</span>
+                  <span className="font-mono text-sm text-white/85 truncate">{card.name}</span>
                 </div>
-                <p className="font-mono text-[11px] text-white/30 pl-8">{card.meta}</p>
+                <p className="font-mono text-[11px] text-white/60 pl-8">{card.meta}</p>
               </div>
             </div>
           ))}

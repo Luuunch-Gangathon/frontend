@@ -64,7 +64,7 @@ export function Architecture({ active }: ArchitectureProps) {
         >
           The Planning Agent.
         </h2>
-        <p className="text-white/45 text-lg mt-2">Agnes orchestrates five specialized tools.</p>
+        <p className="text-white/70 text-lg mt-2">Agnes orchestrates five specialized tools.</p>
       </div>
 
       {/* Diagram */}
@@ -208,7 +208,7 @@ export function Architecture({ active }: ArchitectureProps) {
             transition: 'opacity 0.5s ease 500ms, transform 0.5s ease 500ms',
           }}
         >
-          <span className="font-mono text-sm text-white/55">FrontEnd</span>
+          <span className="font-mono text-sm text-white/80">FrontEnd</span>
         </div>
 
         {/* Agnes node */}
@@ -229,7 +229,7 @@ export function Architecture({ active }: ArchitectureProps) {
             transition: 'opacity 0.4s ease 200ms, transform 0.4s ease 200ms',
           }}
         >
-          <p className="text-[10px] uppercase tracking-[0.15em] text-white/40 font-mono">
+          <p className="text-[10px] uppercase tracking-[0.15em] text-white/70 font-mono">
             Planning Agent
           </p>
           <p className="font-bold text-white text-lg tracking-tight">Agnes</p>
@@ -255,7 +255,7 @@ export function Architecture({ active }: ArchitectureProps) {
               className="w-2 h-2 rounded-full shrink-0"
               style={{ background: tool.dot }}
             />
-            <span className="font-mono text-[13px] text-white/60">{tool.label}</span>
+            <span className="font-mono text-[13px] text-white/85">{tool.label}</span>
           </div>
         ))}
 
@@ -273,7 +273,7 @@ export function Architecture({ active }: ArchitectureProps) {
             transition: 'opacity 0.5s ease 400ms, transform 0.5s ease 400ms',
           }}
         >
-          <span className="font-mono text-[13px] text-white/35">OpenAI</span>
+          <span className="font-mono text-[13px] text-white/70">OpenAI</span>
         </div>
 
         {/* Memory node */}
@@ -290,7 +290,7 @@ export function Architecture({ active }: ArchitectureProps) {
             transition: 'opacity 0.5s ease 400ms, transform 0.5s ease 400ms',
           }}
         >
-          <span className="font-mono text-[13px] text-white/35">Memory</span>
+          <span className="font-mono text-[13px] text-white/70">Memory</span>
         </div>
       </div>
     </div>

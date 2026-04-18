@@ -33,7 +33,7 @@ export function MacbookReveal({ active, zooming, onLaunch }: MacbookRevealProps)
           transition: surroundTransition,
         }}
       >
-        <p className="text-[12px] uppercase tracking-[0.22em] text-white/40 font-medium mb-3">
+        <p className="text-[12px] uppercase tracking-[0.22em] text-white/70 font-medium mb-3">
           Live demo
         </p>
         <h2 className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold text-white tracking-tight">
@@ -134,22 +134,22 @@ export function MacbookReveal({ active, zooming, onLaunch }: MacbookRevealProps)
 
       {/* Feature pills */}
       <div
-        className="flex items-center gap-4 text-white/40 text-sm z-10"
+        className="flex items-center gap-4 text-white/70 text-sm z-10"
         style={{
           opacity: surroundOpacity,
           transition: zooming ? 'opacity 350ms ease-out' : 'opacity 0.7s ease 0.3s',
         }}
       >
         <span>AI-native sourcing</span>
-        <span className="text-white/20">·</span>
+        <span className="text-white/45">·</span>
         <span>Continuous compliance</span>
-        <span className="text-white/20">·</span>
+        <span className="text-white/45">·</span>
         <span>Decision audit trail</span>
       </div>
 
       {/* Hint */}
       <p
-        className="absolute bottom-8 text-sm text-white/25 z-10"
+        className="absolute bottom-8 text-sm text-white/55 z-10"
         style={{
           opacity: surroundOpacity,
           transition: zooming ? 'opacity 350ms ease-out' : 'opacity 0.7s ease 0.7s',
