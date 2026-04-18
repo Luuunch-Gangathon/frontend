@@ -19,16 +19,17 @@ export default async function SupplierPage({
   params: Promise<{ supplierId: string }>
 }) {
   const { supplierId } = await params
+  const numericSupplierId = parseInt(supplierId, 10)
 
   let supplier
   try {
-    supplier = await getSupplier(supplierId)
+    supplier = await getSupplier(numericSupplierId)
   } catch {
     notFound()
   }
 
-  const rawMaterials = getRawMaterialsForSupplier(supplierId)
-  const companies = getCompaniesForSupplier(supplierId)
+  const rawMaterials = getRawMaterialsForSupplier(numericSupplierId)
+  const companies = getCompaniesForSupplier(numericSupplierId)
 
   return (
     <AppShell>

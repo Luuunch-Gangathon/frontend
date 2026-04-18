@@ -8,7 +8,7 @@ import type { Supplier } from "@/lib/types"
 export default async function DictionarySuppliersPage() {
   const suppliers = await getSuppliers()
 
-  function rawMaterialCount(supplierId: string) {
+  function rawMaterialCount(supplierId: number) {
     return SUPPLIER_RAW_MATERIALS.filter((srm) => srm.supplier_id === supplierId).length
   }
 

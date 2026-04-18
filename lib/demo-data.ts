@@ -1,39 +1,39 @@
 // ─── Schema-aligned types ─────────────────────────────────────────────────────
 
-export interface Company { id: string; name: string }
+export interface Company { id: number; name: string }
 
 export interface Product {
-  id: string
+  id: number
   sku: string
-  company_id: string
+  company_id: number
 }
 
 export interface RawMaterial {
-  id: string
+  id: number
   sku: string
 }
 
 export interface BOM {
-  id: string
-  produced_product_id: string
-  consumed_raw_material_ids: string[]
+  id: number
+  produced_product_id: number
+  consumed_raw_material_ids: number[]
 }
 
-export interface Supplier { id: string; name: string }
+export interface Supplier { id: number; name: string }
 
-export interface SupplierRawMaterial { supplier_id: string; raw_material_id: string }
+export interface SupplierRawMaterial { supplier_id: number; raw_material_id: number }
 
 export interface Substitution {
-  id: string
-  from_raw_material_id: string
-  to_raw_material_id: string
+  id: number
+  from_raw_material_id: number
+  to_raw_material_id: number
   reason: string
 }
 
 // v2: deferred — tuning disabled for hackathon demo
 // export interface SupplierAllocation {
-//   supplier_id: string
-//   raw_material_id: string
+//   supplier_id: number
+//   raw_material_id: number
 //   quantity_kg: number
 // }
 
@@ -56,16 +56,16 @@ export interface ComplianceRequirement {
 export type ProposalKind = 'optimization' | 'substitution'
 
 export interface Proposal {
-  id: string
+  id: number
   kind: ProposalKind
   headline: string
   summary: string
-  raw_material_id: string
+  raw_material_id: number
   proposed_action: string
-  companies_involved: string[]
-  current_suppliers: string[]
-  proposed_supplier_id?: string
-  proposed_substitute_raw_material_id?: string
+  companies_involved: number[]
+  current_suppliers: number[]
+  proposed_supplier_id?: number
+  proposed_substitute_raw_material_id?: number
   fragmentation_score: number
   tradeoffs: { gained: string[]; atRisk: string[] }
   conservative: { affected_skus: string[]; timeline: string }
@@ -88,159 +88,144 @@ interface AgnesCannedEntry {
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
 export const COMPANIES: Company[] = [
-  { id: "pharma-co", name: "PharmaCo" },
-  { id: "nutri-labs", name: "NutriLabs" },
-  { id: "biotech-rx", name: "BiotechRx" },
-  { id: "wellness-plus", name: "WellnessPlus" },
-  { id: "green-health", name: "GreenHealth" },
-  { id: "vita-core", name: "VitaCore" },
-  { id: "apex-pharma", name: "ApexPharma" },
-  { id: "nova-nutraceuticals", name: "NovaRx" },
+  { id: 1, name: "PharmaCo" },
+  { id: 2, name: "NutriLabs" },
+  { id: 3, name: "BiotechRx" },
+  { id: 4, name: "WellnessPlus" },
+  { id: 5, name: "GreenHealth" },
+  { id: 6, name: "VitaCore" },
+  { id: 7, name: "ApexPharma" },
+  { id: 8, name: "NovaRx" },
 ]
 
 export const PRODUCTS: Product[] = [
-  { id: "fg-omep-20mg-cap", sku: "FG-OMEP-20MG-CAP", company_id: "pharma-co" },
-  { id: "fg-vitd-2000iu-tab", sku: "FG-VITD-2000IU-TAB", company_id: "pharma-co" },
-  { id: "fg-metf-500mg-tab", sku: "FG-METF-500MG-TAB", company_id: "pharma-co" },
-  { id: "fg-whey-pro-pwd", sku: "FG-WHEY-PRO-PWD", company_id: "nutri-labs" },
-  { id: "fg-multi-vit-tab", sku: "FG-MULTI-VIT-TAB", company_id: "nutri-labs" },
-  { id: "fg-energy-focus-cap", sku: "FG-ENERGY-FOCUS-CAP", company_id: "nutri-labs" },
-  { id: "fg-prob-50b-cap", sku: "FG-PROB-50B-CAP", company_id: "biotech-rx" },
-  { id: "fg-fishoil-1000mg-sgc", sku: "FG-FISHOIL-1000MG-SGC", company_id: "biotech-rx" },
-  { id: "fg-sleep-supp-cap", sku: "FG-SLEEP-SUPP-CAP", company_id: "wellness-plus" },
-  { id: "fg-mag-glyc-tab", sku: "FG-MAG-GLYC-TAB", company_id: "wellness-plus" },
-  { id: "fg-org-omega-sgc", sku: "FG-ORG-OMEGA-SGC", company_id: "green-health" },
-  { id: "fg-plant-pro-pwd", sku: "FG-PLANT-PRO-PWD", company_id: "green-health" },
-  { id: "fg-bcomp-100-tab", sku: "FG-BCOMP-100-TAB", company_id: "vita-core" },
-  { id: "fg-calc-d3-tab", sku: "FG-CALC-D3-TAB", company_id: "vita-core" },
-  { id: "fg-immune-boost-cap", sku: "FG-IMMUNE-BOOST-CAP", company_id: "vita-core" },
-  { id: "fg-ibu-200mg-tab", sku: "FG-IBU-200MG-TAB", company_id: "apex-pharma" },
-  { id: "fg-allergy-rlf-tab", sku: "FG-ALLERGY-RLF-TAB", company_id: "apex-pharma" },
-  { id: "fg-joint-supp-cap", sku: "FG-JOINT-SUPP-CAP", company_id: "nova-nutraceuticals" },
-  { id: "fg-collagen-blend-pwd", sku: "FG-COLLAGEN-BLEND-PWD", company_id: "nova-nutraceuticals" },
+  { id: 1,  sku: "FG-OMEP-20MG-CAP",       company_id: 1 },
+  { id: 2,  sku: "FG-VITD-2000IU-TAB",      company_id: 1 },
+  { id: 3,  sku: "FG-METF-500MG-TAB",       company_id: 1 },
+  { id: 4,  sku: "FG-WHEY-PRO-PWD",         company_id: 2 },
+  { id: 5,  sku: "FG-MULTI-VIT-TAB",        company_id: 2 },
+  { id: 6,  sku: "FG-ENERGY-FOCUS-CAP",     company_id: 2 },
+  { id: 7,  sku: "FG-PROB-50B-CAP",         company_id: 3 },
+  { id: 8,  sku: "FG-FISHOIL-1000MG-SGC",   company_id: 3 },
+  { id: 9,  sku: "FG-SLEEP-SUPP-CAP",       company_id: 4 },
+  { id: 10, sku: "FG-MAG-GLYC-TAB",         company_id: 4 },
+  { id: 11, sku: "FG-ORG-OMEGA-SGC",        company_id: 5 },
+  { id: 12, sku: "FG-PLANT-PRO-PWD",        company_id: 5 },
+  { id: 13, sku: "FG-BCOMP-100-TAB",        company_id: 6 },
+  { id: 14, sku: "FG-CALC-D3-TAB",          company_id: 6 },
+  { id: 15, sku: "FG-IMMUNE-BOOST-CAP",     company_id: 6 },
+  { id: 16, sku: "FG-IBU-200MG-TAB",        company_id: 7 },
+  { id: 17, sku: "FG-ALLERGY-RLF-TAB",      company_id: 7 },
+  { id: 18, sku: "FG-JOINT-SUPP-CAP",       company_id: 8 },
+  { id: 19, sku: "FG-COLLAGEN-BLEND-PWD",   company_id: 8 },
 ]
 
 export const RAW_MATERIALS: RawMaterial[] = [
-  { id: "rm-mag-stearate", sku: "RM-MAG-STEARATE" },
-  { id: "rm-soy-lecithin", sku: "RM-SOY-LECITHIN" },
-  { id: "rm-sunflower-lecithin", sku: "RM-SUNFLOWER-LECITHIN" },
-  { id: "rm-mcc-ph101", sku: "RM-MCC-PH101" },
-  { id: "rm-vitd3-cholecalciferol", sku: "RM-VITD3-CHOLECALCIFEROL" },
-  { id: "rm-fishoil-concentrate", sku: "RM-FISHOIL-CONCENTRATE" },
-  { id: "rm-sunflower-oil", sku: "RM-SUNFLOWER-OIL" },
-  { id: "rm-gelatin", sku: "RM-GELATIN" },
-  { id: "rm-hpmc", sku: "RM-HPMC" },
-  { id: "rm-corn-starch", sku: "RM-CORN-STARCH" },
+  { id: 1,  sku: "RM-MAG-STEARATE" },
+  { id: 2,  sku: "RM-SOY-LECITHIN" },
+  { id: 3,  sku: "RM-SUNFLOWER-LECITHIN" },
+  { id: 4,  sku: "RM-MCC-PH101" },
+  { id: 5,  sku: "RM-VITD3-CHOLECALCIFEROL" },
+  { id: 6,  sku: "RM-FISHOIL-CONCENTRATE" },
+  { id: 7,  sku: "RM-SUNFLOWER-OIL" },
+  { id: 8,  sku: "RM-GELATIN" },
+  { id: 9,  sku: "RM-HPMC" },
+  { id: 10, sku: "RM-CORN-STARCH" },
 ]
 
 export const BOMS: BOM[] = [
-  { id: "bom-omep", produced_product_id: "fg-omep-20mg-cap", consumed_raw_material_ids: ["rm-mag-stearate", "rm-mcc-ph101", "rm-hpmc"] },
-  { id: "bom-vitd", produced_product_id: "fg-vitd-2000iu-tab", consumed_raw_material_ids: ["rm-mag-stearate", "rm-vitd3-cholecalciferol", "rm-mcc-ph101", "rm-corn-starch"] },
-  { id: "bom-metf", produced_product_id: "fg-metf-500mg-tab", consumed_raw_material_ids: ["rm-mag-stearate", "rm-mcc-ph101", "rm-corn-starch"] },
-  { id: "bom-whey", produced_product_id: "fg-whey-pro-pwd", consumed_raw_material_ids: ["rm-soy-lecithin", "rm-sunflower-oil"] },
-  { id: "bom-multi", produced_product_id: "fg-multi-vit-tab", consumed_raw_material_ids: ["rm-mag-stearate", "rm-vitd3-cholecalciferol", "rm-mcc-ph101"] },
-  { id: "bom-energy", produced_product_id: "fg-energy-focus-cap", consumed_raw_material_ids: ["rm-soy-lecithin", "rm-mag-stearate"] },
-  { id: "bom-prob", produced_product_id: "fg-prob-50b-cap", consumed_raw_material_ids: ["rm-mag-stearate", "rm-hpmc", "rm-mcc-ph101"] },
-  { id: "bom-fishoil", produced_product_id: "fg-fishoil-1000mg-sgc", consumed_raw_material_ids: ["rm-fishoil-concentrate", "rm-gelatin", "rm-soy-lecithin"] },
-  { id: "bom-sleep", produced_product_id: "fg-sleep-supp-cap", consumed_raw_material_ids: ["rm-mag-stearate", "rm-hpmc"] },
-  { id: "bom-mag", produced_product_id: "fg-mag-glyc-tab", consumed_raw_material_ids: ["rm-mag-stearate", "rm-mcc-ph101", "rm-corn-starch"] },
-  { id: "bom-omega", produced_product_id: "fg-org-omega-sgc", consumed_raw_material_ids: ["rm-fishoil-concentrate", "rm-sunflower-lecithin", "rm-sunflower-oil"] },
-  { id: "bom-plant", produced_product_id: "fg-plant-pro-pwd", consumed_raw_material_ids: ["rm-soy-lecithin", "rm-mag-stearate"] },
-  { id: "bom-bcomp", produced_product_id: "fg-bcomp-100-tab", consumed_raw_material_ids: ["rm-mag-stearate", "rm-mcc-ph101"] },
-  { id: "bom-calcd3", produced_product_id: "fg-calc-d3-tab", consumed_raw_material_ids: ["rm-vitd3-cholecalciferol", "rm-mag-stearate", "rm-corn-starch"] },
-  { id: "bom-immune", produced_product_id: "fg-immune-boost-cap", consumed_raw_material_ids: ["rm-mag-stearate", "rm-mcc-ph101"] },
-  { id: "bom-ibu", produced_product_id: "fg-ibu-200mg-tab", consumed_raw_material_ids: ["rm-mag-stearate", "rm-mcc-ph101", "rm-corn-starch"] },
-  { id: "bom-allergy", produced_product_id: "fg-allergy-rlf-tab", consumed_raw_material_ids: ["rm-mag-stearate", "rm-hpmc"] },
-  { id: "bom-joint", produced_product_id: "fg-joint-supp-cap", consumed_raw_material_ids: ["rm-gelatin", "rm-vitd3-cholecalciferol", "rm-mag-stearate"] },
-  { id: "bom-collagen", produced_product_id: "fg-collagen-blend-pwd", consumed_raw_material_ids: ["rm-soy-lecithin"] },
+  { id: 1,  produced_product_id: 1,  consumed_raw_material_ids: [1, 4, 9] },
+  { id: 2,  produced_product_id: 2,  consumed_raw_material_ids: [1, 5, 4, 10] },
+  { id: 3,  produced_product_id: 3,  consumed_raw_material_ids: [1, 4, 10] },
+  { id: 4,  produced_product_id: 4,  consumed_raw_material_ids: [2, 7] },
+  { id: 5,  produced_product_id: 5,  consumed_raw_material_ids: [1, 5, 4] },
+  { id: 6,  produced_product_id: 6,  consumed_raw_material_ids: [2, 1] },
+  { id: 7,  produced_product_id: 7,  consumed_raw_material_ids: [1, 9, 4] },
+  { id: 8,  produced_product_id: 8,  consumed_raw_material_ids: [6, 8, 2] },
+  { id: 9,  produced_product_id: 9,  consumed_raw_material_ids: [1, 9] },
+  { id: 10, produced_product_id: 10, consumed_raw_material_ids: [1, 4, 10] },
+  { id: 11, produced_product_id: 11, consumed_raw_material_ids: [6, 3, 7] },
+  { id: 12, produced_product_id: 12, consumed_raw_material_ids: [2, 1] },
+  { id: 13, produced_product_id: 13, consumed_raw_material_ids: [1, 4] },
+  { id: 14, produced_product_id: 14, consumed_raw_material_ids: [5, 1, 10] },
+  { id: 15, produced_product_id: 15, consumed_raw_material_ids: [1, 4] },
+  { id: 16, produced_product_id: 16, consumed_raw_material_ids: [1, 4, 10] },
+  { id: 17, produced_product_id: 17, consumed_raw_material_ids: [1, 9] },
+  { id: 18, produced_product_id: 18, consumed_raw_material_ids: [8, 5, 1] },
+  { id: 19, produced_product_id: 19, consumed_raw_material_ids: [2] },
 ]
 
 export const SUPPLIERS: Supplier[] = [
-  { id: "jost-chemical", name: "Jost Chemical" },
-  { id: "peter-greven", name: "Peter Greven" },
-  { id: "mallinckrodt", name: "Mallinckrodt Pharma" },
-  { id: "chemwerth", name: "Chemwerth Inc." },
-  { id: "cargill", name: "Cargill" },
-  { id: "adt", name: "American Lecithin (ADT)" },
-  { id: "lecico", name: "LECICO GmbH" },
-  { id: "dsm", name: "DSM Nutritional Products" },
-  { id: "rousselot", name: "Rousselot" },
-  { id: "fmc-biopolymer", name: "FMC Biopolymer" },
+  { id: 1,  name: "Jost Chemical" },
+  { id: 2,  name: "Peter Greven" },
+  { id: 3,  name: "Mallinckrodt Pharma" },
+  { id: 4,  name: "Chemwerth Inc." },
+  { id: 5,  name: "Cargill" },
+  { id: 6,  name: "American Lecithin (ADT)" },
+  { id: 7,  name: "LECICO GmbH" },
+  { id: 8,  name: "DSM Nutritional Products" },
+  { id: 9,  name: "Rousselot" },
+  { id: 10, name: "FMC Biopolymer" },
 ]
 
 export const SUPPLIER_RAW_MATERIALS: SupplierRawMaterial[] = [
-  { supplier_id: "jost-chemical", raw_material_id: "rm-mag-stearate" },
-  { supplier_id: "peter-greven", raw_material_id: "rm-mag-stearate" },
-  { supplier_id: "mallinckrodt", raw_material_id: "rm-mag-stearate" },
-  { supplier_id: "chemwerth", raw_material_id: "rm-mag-stearate" },
-  { supplier_id: "cargill", raw_material_id: "rm-soy-lecithin" },
-  { supplier_id: "adt", raw_material_id: "rm-soy-lecithin" },
-  { supplier_id: "lecico", raw_material_id: "rm-sunflower-lecithin" },
-  { supplier_id: "fmc-biopolymer", raw_material_id: "rm-mcc-ph101" },
-  { supplier_id: "fmc-biopolymer", raw_material_id: "rm-hpmc" },
-  { supplier_id: "dsm", raw_material_id: "rm-vitd3-cholecalciferol" },
-  { supplier_id: "dsm", raw_material_id: "rm-fishoil-concentrate" },
-  { supplier_id: "cargill", raw_material_id: "rm-sunflower-oil" },
-  { supplier_id: "rousselot", raw_material_id: "rm-gelatin" },
-  { supplier_id: "cargill", raw_material_id: "rm-corn-starch" },
+  { supplier_id: 1,  raw_material_id: 1 },
+  { supplier_id: 2,  raw_material_id: 1 },
+  { supplier_id: 3,  raw_material_id: 1 },
+  { supplier_id: 4,  raw_material_id: 1 },
+  { supplier_id: 5,  raw_material_id: 2 },
+  { supplier_id: 6,  raw_material_id: 2 },
+  { supplier_id: 7,  raw_material_id: 3 },
+  { supplier_id: 10, raw_material_id: 4 },
+  { supplier_id: 10, raw_material_id: 9 },
+  { supplier_id: 8,  raw_material_id: 5 },
+  { supplier_id: 8,  raw_material_id: 6 },
+  { supplier_id: 5,  raw_material_id: 7 },
+  { supplier_id: 9,  raw_material_id: 8 },
+  { supplier_id: 5,  raw_material_id: 10 },
 ]
 
 export const SUBSTITUTIONS: Substitution[] = [
   {
-    id: "sub-soy-to-sunflower-lecithin",
-    from_raw_material_id: "rm-soy-lecithin",
-    to_raw_material_id: "rm-sunflower-lecithin",
+    id: 1,
+    from_raw_material_id: 2,
+    to_raw_material_id: 3,
     reason: "Eliminates soy allergen declaration; functionally equivalent HLB range 7–9.",
   },
   {
-    id: "sub-gelatin-to-hpmc",
-    from_raw_material_id: "rm-gelatin",
-    to_raw_material_id: "rm-hpmc",
+    id: 2,
+    from_raw_material_id: 8,
+    to_raw_material_id: 9,
     reason: "Vegan/vegetarian capsule option; HPMC accepted across all major pharmacopoeias.",
   },
   {
-    id: "sub-hpmc-to-gelatin",
-    from_raw_material_id: "rm-hpmc",
-    to_raw_material_id: "rm-gelatin",
+    id: 3,
+    from_raw_material_id: 9,
+    to_raw_material_id: 8,
     reason: "Cost reduction (~18%) when Halal/vegan label is not required.",
   },
   {
-    id: "sub-corn-starch-to-mcc",
-    from_raw_material_id: "rm-corn-starch",
-    to_raw_material_id: "rm-mcc-ph101",
+    id: 4,
+    from_raw_material_id: 10,
+    to_raw_material_id: 4,
     reason: "MCC PH101 offers superior compressibility for direct-compression tablet lines.",
   },
 ]
 
 // v2: deferred — tuning disabled for hackathon demo
-// export const SUPPLIER_ALLOCATIONS: SupplierAllocation[] = [
-//   { supplier_id: "jost-chemical", raw_material_id: "rm-mag-stearate", quantity_kg: 4200 },
-//   { supplier_id: "peter-greven", raw_material_id: "rm-mag-stearate", quantity_kg: 1800 },
-//   { supplier_id: "mallinckrodt", raw_material_id: "rm-mag-stearate", quantity_kg: 1200 },
-//   { supplier_id: "chemwerth", raw_material_id: "rm-mag-stearate", quantity_kg: 800 },
-//   { supplier_id: "cargill", raw_material_id: "rm-soy-lecithin", quantity_kg: 3500 },
-//   { supplier_id: "adt", raw_material_id: "rm-soy-lecithin", quantity_kg: 1500 },
-//   { supplier_id: "lecico", raw_material_id: "rm-sunflower-lecithin", quantity_kg: 900 },
-//   { supplier_id: "fmc-biopolymer", raw_material_id: "rm-mcc-ph101", quantity_kg: 8200 },
-//   { supplier_id: "fmc-biopolymer", raw_material_id: "rm-hpmc", quantity_kg: 2100 },
-//   { supplier_id: "dsm", raw_material_id: "rm-vitd3-cholecalciferol", quantity_kg: 500 },
-//   { supplier_id: "dsm", raw_material_id: "rm-fishoil-concentrate", quantity_kg: 6400 },
-//   { supplier_id: "cargill", raw_material_id: "rm-sunflower-oil", quantity_kg: 3200 },
-//   { supplier_id: "rousselot", raw_material_id: "rm-gelatin", quantity_kg: 4700 },
-//   { supplier_id: "cargill", raw_material_id: "rm-corn-starch", quantity_kg: 5500 },
-// ]
+// export const SUPPLIER_ALLOCATIONS: SupplierAllocation[] = [...]
 
 export const PROPOSALS: Proposal[] = [
   {
-    id: "opp-consolidate-mag-stearate",
+    id: 1,
     kind: "optimization",
     headline: "Consolidate magnesium stearate suppliers across 8 companies",
     summary: "Four competing suppliers, one raw material, portfolio-wide leverage going unused — consolidating on Jost Chemical unlocks $210k–250k in annual savings.",
-    raw_material_id: "rm-mag-stearate",
+    raw_material_id: 1,
     proposed_action: "Consolidate all 8 portfolio companies onto Jost Chemical as the primary RM-MAG-STEARATE supplier, with Peter Greven qualified as backup for Halal-labelled SKUs.",
-    companies_involved: ["pharma-co", "nutri-labs", "biotech-rx", "wellness-plus", "green-health", "vita-core", "apex-pharma", "nova-nutraceuticals"],
-    current_suppliers: ["jost-chemical", "peter-greven", "mallinckrodt", "chemwerth"],
-    proposed_supplier_id: "jost-chemical",
+    companies_involved: [1, 2, 3, 4, 5, 6, 7, 8],
+    current_suppliers: [1, 2, 3, 4],
+    proposed_supplier_id: 1,
     fragmentation_score: 87,
     tradeoffs: {
       gained: [
@@ -306,15 +291,15 @@ export const PROPOSALS: Proposal[] = [
     ],
   },
   {
-    id: "opp-substitute-soy-lecithin",
+    id: 2,
     kind: "substitution",
     headline: "Substitute soy lecithin with sunflower lecithin across 5 SKUs",
     summary: "Functionally equivalent swap eliminates the soy allergen declaration, unlocking allergen-restricted retail channels worth an estimated $1.2M in new revenue.",
-    raw_material_id: "rm-soy-lecithin",
+    raw_material_id: 2,
     proposed_action: "Replace RM-SOY-LECITHIN with RM-SUNFLOWER-LECITHIN (sourced from LECICO GmbH) across 5 finished-good SKUs. Use rate increases 5–10% to match emulsification capacity.",
-    companies_involved: ["nutri-labs", "biotech-rx", "green-health", "nova-nutraceuticals"],
-    current_suppliers: ["cargill", "adt"],
-    proposed_substitute_raw_material_id: "rm-sunflower-lecithin",
+    companies_involved: [2, 3, 5, 8],
+    current_suppliers: [5, 6],
+    proposed_substitute_raw_material_id: 3,
     fragmentation_score: 62,
     tradeoffs: {
       gained: [
@@ -381,15 +366,15 @@ export const PROPOSALS: Proposal[] = [
     ],
   },
   {
-    id: "opp-consolidate-mcc-ph101",
+    id: 3,
     kind: "optimization",
     headline: "Formalize MCC PH101 portfolio agreement with FMC Biopolymer",
     summary: "Six companies already buy from a single supplier — formalizing this as a portfolio MSA captures 12% additional discount and replaces 6 individual contracts with one.",
-    raw_material_id: "rm-mcc-ph101",
+    raw_material_id: 4,
     proposed_action: "Execute a portfolio-level Master Supply Agreement with FMC Biopolymer covering all 6 companies consuming RM-MCC-PH101, while qualifying Ashland as a secondary source to eliminate single-supplier concentration risk.",
-    companies_involved: ["pharma-co", "nutri-labs", "biotech-rx", "wellness-plus", "vita-core", "apex-pharma"],
-    current_suppliers: ["fmc-biopolymer"],
-    proposed_supplier_id: "fmc-biopolymer",
+    companies_involved: [1, 2, 3, 4, 6, 7],
+    current_suppliers: [10],
+    proposed_supplier_id: 10,
     fragmentation_score: 44,
     tradeoffs: {
       gained: [
@@ -450,29 +435,29 @@ export const PROPOSALS: Proposal[] = [
 
 // ─── Agnes Q&A ───────────────────────────────────────────────────────────────
 
-export const AGNES_SUGGESTED_QUESTIONS: Record<string, Array<{ id: string; question: string }>> = {
-  'opp-consolidate-mag-stearate': [
-    { id: 'q1', question: 'Why Jost Chemical specifically?' },
-    { id: 'q2', question: 'What about Halal compliance?' },
-    { id: 'q3', question: "What's the single-source risk?" },
-    { id: 'q4', question: 'Is 9–12 months realistic?' },
+export const AGNES_SUGGESTED_QUESTIONS: Record<number, Array<{ id: number; question: string }>> = {
+  1: [
+    { id: 1, question: 'Why Jost Chemical specifically?' },
+    { id: 2, question: 'What about Halal compliance?' },
+    { id: 3, question: "What's the single-source risk?" },
+    { id: 4, question: 'Is 9–12 months realistic?' },
   ],
-  'opp-substitute-soy-lecithin': [
-    { id: 'q1', question: 'Is sunflower lecithin really equivalent?' },
-    { id: 'q2', question: 'Why LECICO as sole source?' },
-    { id: 'q3', question: 'Which SKUs are affected first?' },
-    { id: 'q4', question: "What's the revenue upside math?" },
+  2: [
+    { id: 5, question: 'Is sunflower lecithin really equivalent?' },
+    { id: 6, question: 'Why LECICO as sole source?' },
+    { id: 7, question: 'Which SKUs are affected first?' },
+    { id: 8, question: "What's the revenue upside math?" },
   ],
-  'opp-consolidate-mcc-ph101': [
-    { id: 'q1', question: 'Why formalize if FMC is already the sole supplier?' },
-    { id: 'q2', question: 'How long does Ashland qualification take?' },
-    { id: 'q3', question: "What's the 12% discount based on?" },
-    { id: 'q4', question: 'Risks during MSA negotiation?' },
+  3: [
+    { id: 9,  question: 'Why formalize if FMC is already the sole supplier?' },
+    { id: 10, question: 'How long does Ashland qualification take?' },
+    { id: 11, question: "What's the 12% discount based on?" },
+    { id: 12, question: 'Risks during MSA negotiation?' },
   ],
 }
 
-export const AGNES_CANNED_RESPONSES: Record<string, AgnesCannedEntry[]> = {
-  'opp-consolidate-mag-stearate': [
+export const AGNES_CANNED_RESPONSES: Record<number, AgnesCannedEntry[]> = {
+  1: [
     {
       keywords: ['jost', 'why jost', 'specifically'],
       reply: {
@@ -534,7 +519,7 @@ export const AGNES_CANNED_RESPONSES: Record<string, AgnesCannedEntry[]> = {
     },
   ],
 
-  'opp-substitute-soy-lecithin': [
+  2: [
     {
       keywords: ['equivalent', 'really equivalent', 'same', 'functionally', 'sunflower lecithin'],
       reply: {
@@ -597,7 +582,7 @@ export const AGNES_CANNED_RESPONSES: Record<string, AgnesCannedEntry[]> = {
     },
   ],
 
-  'opp-consolidate-mcc-ph101': [
+  3: [
     {
       keywords: ['formalize', 'already', 'why formalize', 'sole supplier', 'fmc already', 'already sole'],
       reply: {
@@ -663,31 +648,31 @@ export const AGNES_CANNED_RESPONSES: Record<string, AgnesCannedEntry[]> = {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-export function getCompany(id: string): Company | undefined {
+export function getCompany(id: number): Company | undefined {
   return COMPANIES.find((c) => c.id === id)
 }
 
-export function getSupplier(id: string): Supplier | undefined {
+export function getSupplier(id: number): Supplier | undefined {
   return SUPPLIERS.find((s) => s.id === id)
 }
 
-export function getProduct(id: string): Product | undefined {
+export function getProduct(id: number): Product | undefined {
   return PRODUCTS.find((p) => p.id === id)
 }
 
-export function getRawMaterial(id: string): RawMaterial | undefined {
+export function getRawMaterial(id: number): RawMaterial | undefined {
   return RAW_MATERIALS.find((r) => r.id === id)
 }
 
-export function getFinishedGoodsForCompany(companyId: string): Product[] {
+export function getFinishedGoodsForCompany(companyId: number): Product[] {
   return PRODUCTS.filter((p) => p.company_id === companyId)
 }
 
-export function getBOM(productId: string): BOM | undefined {
+export function getBOM(productId: number): BOM | undefined {
   return BOMS.find((b) => b.produced_product_id === productId)
 }
 
-export function getRawMaterialsForProduct(productId: string): RawMaterial[] {
+export function getRawMaterialsForProduct(productId: number): RawMaterial[] {
   const bom = getBOM(productId)
   if (!bom) return []
   return bom.consumed_raw_material_ids
@@ -695,21 +680,21 @@ export function getRawMaterialsForProduct(productId: string): RawMaterial[] {
     .filter((r): r is RawMaterial => r != null)
 }
 
-export function getSuppliersForRawMaterial(rawMaterialId: string): Supplier[] {
+export function getSuppliersForRawMaterial(rawMaterialId: number): Supplier[] {
   return SUPPLIER_RAW_MATERIALS
     .filter((srm) => srm.raw_material_id === rawMaterialId)
     .map((srm) => getSupplier(srm.supplier_id))
     .filter((s): s is Supplier => s != null)
 }
 
-export function getRawMaterialsForSupplier(supplierId: string): RawMaterial[] {
+export function getRawMaterialsForSupplier(supplierId: number): RawMaterial[] {
   return SUPPLIER_RAW_MATERIALS
     .filter((srm) => srm.supplier_id === supplierId)
     .map((srm) => getRawMaterial(srm.raw_material_id))
     .filter((r): r is RawMaterial => r != null)
 }
 
-export function getCompaniesForSupplier(supplierId: string): Company[] {
+export function getCompaniesForSupplier(supplierId: number): Company[] {
   const rmIds = new Set(
     SUPPLIER_RAW_MATERIALS
       .filter((srm) => srm.supplier_id === supplierId)
@@ -719,12 +704,12 @@ export function getCompaniesForSupplier(supplierId: string): Company[] {
     BOMS
       .filter((b) => b.consumed_raw_material_ids.some((id) => rmIds.has(id)))
       .map((b) => PRODUCTS.find((p) => p.id === b.produced_product_id)?.company_id)
-      .filter((id): id is string => id != null)
+      .filter((id): id is number => id != null)
   )
   return COMPANIES.filter((c) => companyIds.has(c.id))
 }
 
-export function getFinishedGoodsUsingRawMaterial(rawMaterialId: string): Product[] {
+export function getFinishedGoodsUsingRawMaterial(rawMaterialId: number): Product[] {
   const productIds = new Set(
     BOMS
       .filter((b) => b.consumed_raw_material_ids.includes(rawMaterialId))
@@ -733,7 +718,7 @@ export function getFinishedGoodsUsingRawMaterial(rawMaterialId: string): Product
   return PRODUCTS.filter((p) => productIds.has(p.id))
 }
 
-export function getCompaniesUsingRawMaterial(rawMaterialId: string): Company[] {
+export function getCompaniesUsingRawMaterial(rawMaterialId: number): Company[] {
   const companyIds = new Set(
     getFinishedGoodsUsingRawMaterial(rawMaterialId).map((p) => p.company_id)
   )
@@ -744,7 +729,7 @@ export function getProposals(): Proposal[] {
   return [...PROPOSALS].sort((a, b) => b.fragmentation_score - a.fragmentation_score)
 }
 
-export function getProposal(id: string): Proposal | undefined {
+export function getProposal(id: number): Proposal | undefined {
   return PROPOSALS.find((o) => o.id === id)
 }
 

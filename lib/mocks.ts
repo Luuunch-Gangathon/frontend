@@ -28,7 +28,8 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
 
   const proposalId = idMatch(p, '/proposals');
   if (proposalId) {
-    const found = PROPOSALS.find((o) => o.id === proposalId);
+    const numId = parseInt(proposalId, 10);
+    const found = PROPOSALS.find((o) => o.id === numId);
     if (!found) throw Object.assign(new Error('Not found'), { status: 404 });
     return found as unknown as T;
   }
@@ -38,7 +39,8 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
 
   const companyId = idMatch(p, '/companies');
   if (companyId) {
-    const found = COMPANIES.find((c) => c.id === companyId);
+    const numId = parseInt(companyId, 10);
+    const found = COMPANIES.find((c) => c.id === numId);
     if (!found) throw Object.assign(new Error('Not found'), { status: 404 });
     return found as unknown as T;
   }
@@ -46,21 +48,23 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
   // ─── Products ─────────────────────────────────────────────────────────────
   if (p === '/products') {
     const cid = params.get('company_id');
-    const out = cid ? PRODUCTS.filter((pr) => pr.company_id === cid) : PRODUCTS;
+    const numCid = cid ? parseInt(cid, 10) : null;
+    const out = numCid != null ? PRODUCTS.filter((pr) => pr.company_id === numCid) : PRODUCTS;
     return out as unknown as T;
   }
 
   const productBomMatch = p.match(/^\/products\/([^/]+)\/bom$/);
   if (productBomMatch) {
-    const pid = productBomMatch[1];
-    const bom = BOMS.find((b) => b.produced_product_id === pid);
+    const numPid = parseInt(productBomMatch[1], 10);
+    const bom = BOMS.find((b) => b.produced_product_id === numPid);
     if (!bom) throw Object.assign(new Error('Not found'), { status: 404 });
     return bom as unknown as T;
   }
 
   const productId = idMatch(p, '/products');
   if (productId) {
-    const found = PRODUCTS.find((pr) => pr.id === productId);
+    const numId = parseInt(productId, 10);
+    const found = PRODUCTS.find((pr) => pr.id === numId);
     if (!found) throw Object.assign(new Error('Not found'), { status: 404 });
     return found as unknown as T;
   }
@@ -70,7 +74,8 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
 
   const rawMaterialId = idMatch(p, '/raw-materials');
   if (rawMaterialId) {
-    const found = RAW_MATERIALS.find((r) => r.id === rawMaterialId);
+    const numId = parseInt(rawMaterialId, 10);
+    const found = RAW_MATERIALS.find((r) => r.id === numId);
     if (!found) throw Object.assign(new Error('Not found'), { status: 404 });
     return found as unknown as T;
   }
@@ -80,7 +85,8 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
 
   const supplierId = idMatch(p, '/suppliers');
   if (supplierId) {
-    const found = SUPPLIERS.find((s) => s.id === supplierId);
+    const numId = parseInt(supplierId, 10);
+    const found = SUPPLIERS.find((s) => s.id === numId);
     if (!found) throw Object.assign(new Error('Not found'), { status: 404 });
     return found as unknown as T;
   }
@@ -97,12 +103,13 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
   // ─── Agnes ────────────────────────────────────────────────────────────────
   if (p === '/agnes/suggestions') {
     const pid = params.get('proposal_id') ?? '';
-    return (AGNES_SUGGESTED_QUESTIONS[pid] ?? []) as unknown as T;
+    const numPid = parseInt(pid, 10);
+    return (AGNES_SUGGESTED_QUESTIONS[numPid] ?? []) as unknown as T;
   }
 
   if (p === '/agnes/ask' && init?.method === 'POST') {
     await new Promise((r) => setTimeout(r, 480)); // total ~600ms with leading delay
-    const body = JSON.parse(init.body as string) as { proposal_id: string; message: string };
+    const body = JSON.parse(init.body as string) as { proposal_id: number; message: string };
     const canned = AGNES_CANNED_RESPONSES[body.proposal_id] ?? [];
     const lower = body.message.toLowerCase();
     const match = canned.find((entry) =>
@@ -120,4 +127,3 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
 
   throw new Error(`mock: no handler for ${path}`);
 }
-

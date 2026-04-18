@@ -5,43 +5,43 @@
 // ─── Core entities ────────────────────────────────────────────────────────────
 
 export interface Company {
-  id: string
+  id: number
   name: string
 }
 
 export interface Product {
-  id: string
+  id: number
   sku: string
-  company_id: string
+  company_id: number
 }
 
 export interface RawMaterial {
-  id: string
+  id: number
   sku: string
 }
 
 export interface Supplier {
-  id: string
+  id: number
   name: string
 }
 
 export interface BOM {
-  id: string
-  produced_product_id: string
-  consumed_raw_material_ids: string[]
+  id: number
+  produced_product_id: number
+  consumed_raw_material_ids: number[]
 }
 
 export interface SupplierRawMaterial {
-  supplier_id: string
-  raw_material_id: string
+  supplier_id: number
+  raw_material_id: number
 }
 
 // ─── Substitutions ────────────────────────────────────────────────────────────
 
 export interface Substitution {
-  id: string
-  from_raw_material_id: string
-  to_raw_material_id: string
+  id: number
+  from_raw_material_id: number
+  to_raw_material_id: number
   reason: string
 }
 
@@ -64,16 +64,16 @@ export interface ComplianceRequirement {
 }
 
 export interface Proposal {
-  id: string
+  id: number
   kind: ProposalKind
   headline: string
   summary: string
-  raw_material_id: string
+  raw_material_id: number
   proposed_action: string
-  companies_involved: string[]
-  current_suppliers: string[]
-  proposed_supplier_id?: string | null
-  proposed_substitute_raw_material_id?: string | null
+  companies_involved: number[]
+  current_suppliers: number[]
+  proposed_supplier_id?: number | null
+  proposed_substitute_raw_material_id?: number | null
   fragmentation_score: number
   tradeoffs: { gained: string[]; atRisk: string[] }
   conservative: { affected_skus: string[]; timeline: string }
@@ -93,12 +93,12 @@ export interface AgnesMessage {
 }
 
 export interface AgnesSuggestedQuestion {
-  id: string
+  id: number
   question: string
 }
 
 export interface AgnesAskRequest {
-  proposal_id: string
+  proposal_id: number
   message: string
   history?: AgnesMessage[]
 }
@@ -109,8 +109,8 @@ export interface AgnesAskResponse {
 
 // ─── Tuning (v2: deferred post-hackathon) ────────────────────────────────────
 // export interface SupplierAllocation {
-//   supplier_id: string
-//   raw_material_id: string
+//   supplier_id: number
+//   raw_material_id: number
 //   quantity_kg: number
 // }
 // export interface TuningRequest { allocations: SupplierAllocation[] }

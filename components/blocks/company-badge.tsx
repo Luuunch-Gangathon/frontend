@@ -2,7 +2,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 interface CompanyBadgeProps {
-  id: string
+  id: number
   name: string
   className?: string
 }

@@ -20,20 +20,21 @@ export default async function RawMaterialPage({
   params: Promise<{ rawMaterialId: string }>
 }) {
   const { rawMaterialId } = await params
+  const numericRawMaterialId = parseInt(rawMaterialId, 10)
 
   let rawMaterial
   try {
-    rawMaterial = await getRawMaterial(rawMaterialId)
+    rawMaterial = await getRawMaterial(numericRawMaterialId)
   } catch {
     notFound()
   }
 
   const proposals = await getProposals()
 
-  const suppliers = getSuppliersForRawMaterial(rawMaterialId)
-  const finishedGoods = getFinishedGoodsUsingRawMaterial(rawMaterialId)
-  const companies = getCompaniesUsingRawMaterial(rawMaterialId)
-  const oppCount = proposals.filter((o) => o.raw_material_id === rawMaterialId).length
+  const suppliers = getSuppliersForRawMaterial(numericRawMaterialId)
+  const finishedGoods = getFinishedGoodsUsingRawMaterial(numericRawMaterialId)
+  const companies = getCompaniesUsingRawMaterial(numericRawMaterialId)
+  const oppCount = proposals.filter((o) => o.raw_material_id === numericRawMaterialId).length
 
   return (
     <AppShell>
@@ -76,7 +77,7 @@ export default async function RawMaterialPage({
             {
               key: "company",
               label: "Company",
-              render: (p) => getCompany(p.company_id)?.name ?? p.company_id,
+              render: (p) => getCompany(p.company_id)?.name ?? String(p.company_id),
             },
           ]}
           rows={finishedGoods}

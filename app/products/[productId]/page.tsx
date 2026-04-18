@@ -16,10 +16,11 @@ export default async function ProductPage({
   params: Promise<{ productId: string }>
 }) {
   const { productId } = await params
+  const numericProductId = parseInt(productId, 10)
 
   let product
   try {
-    product = await getProduct(productId)
+    product = await getProduct(numericProductId)
   } catch {
     notFound()
   }
@@ -31,7 +32,7 @@ export default async function ProductPage({
     notFound()
   }
 
-  const rawMaterials = getRawMaterialsForProduct(productId)
+  const rawMaterials = getRawMaterialsForProduct(numericProductId)
 
   return (
     <AppShell>

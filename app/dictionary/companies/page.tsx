@@ -7,7 +7,7 @@ import type { Company } from "@/lib/types"
 export default async function DictionaryCompaniesPage() {
   const [companies, products] = await Promise.all([getCompanies(), getProducts()])
 
-  const skuCounts = new Map<string, number>()
+  const skuCounts = new Map<number, number>()
   for (const p of products) {
     skuCounts.set(p.company_id, (skuCounts.get(p.company_id) ?? 0) + 1)
   }

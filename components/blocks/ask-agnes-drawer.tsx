@@ -6,7 +6,7 @@ import { askAgnes, getAgnesSuggestions } from '@/lib/api'
 import type { AgnesMessage, AgnesSuggestedQuestion } from '@/lib/types'
 
 interface AskAgnesDrawerProps {
-  proposalId: string
+  proposalId: number
   proposalHeadline: string
 }
 

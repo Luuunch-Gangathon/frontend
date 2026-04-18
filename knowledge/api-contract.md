@@ -54,16 +54,16 @@ Response: `Proposal[]`
 type ProposalKind = 'optimization' | 'substitution'
 
 interface Proposal {
-  id: string                                         // unique slug, e.g. "opp-consolidate-mag-stearate"
+  id: number                                         // Postgres integer PK
   kind: ProposalKind                                 // see ProposalKind above
   headline: string                                   // one-line title shown on the proposal card
   summary: string                                    // 1–2 sentence elevator pitch ("why this matters")
-  raw_material_id: string                            // the raw material this proposal is about (FK → RawMaterial.id)
+  raw_material_id: number                            // FK → RawMaterial.id — the raw material this proposal is about
   proposed_action: string                            // concrete recommendation, e.g. "Consolidate all 8 companies onto Jost Chemical"
-  companies_involved: string[]                       // FKs → Company.id — which portfolio companies are affected
-  current_suppliers: string[]                        // FKs → Supplier.id — who currently supplies this material today
-  proposed_supplier_id?: string | null               // FK → Supplier.id — only set for 'optimization' (single target supplier)
-  proposed_substitute_raw_material_id?: string | null // FK → RawMaterial.id — only set for 'substitution' (the replacement material)
+  companies_involved: number[]                       // FKs → Company.id — which portfolio companies are affected
+  current_suppliers: number[]                        // FKs → Supplier.id — who currently supplies this material today
+  proposed_supplier_id?: number | null               // FK → Supplier.id — only set for 'optimization' (single target supplier)
+  proposed_substitute_raw_material_id?: number | null // FK → RawMaterial.id — only set for 'substitution' (the replacement material)
 
   // 0–100 score: how fragmented the current supply is across the portfolio.
   // High score = many suppliers buying the same material across many companies (big consolidation upside).
@@ -125,7 +125,7 @@ Response: `Company[]`
 
 ```ts
 interface Company {
-  id: string    // slug, e.g. "pharma-co" — stable across the app
+  id: number    // Postgres integer PK
   name: string  // display name, e.g. "PharmaCo"
 }
 ```
@@ -141,15 +141,15 @@ List finished goods, optionally filtered.
 Query params:
 | name | type | required | notes |
 |---|---|---|---|
-| `company_id` | string | no | exact match |
+| `company_id` | number | no | exact match |
 
 Response: `Product[]`
 
 ```ts
 interface Product {
-  id: string           // slug, e.g. "fg-omep-20mg-cap" (fg = finished good)
+  id: number           // Postgres integer PK
   sku: string          // human-facing SKU code shown in UI, e.g. "FG-OMEP-20MG-CAP"
-  company_id: string   // FK → Company.id — which portfolio company owns this product
+  company_id: number   // FK → Company.id — which portfolio company owns this product
 }
 ```
 
@@ -164,9 +164,9 @@ Response: `BOM`
 ```ts
 // BOM = Bill of Materials: the raw-material list required to produce one finished good.
 interface BOM {
-  id: string                           // slug, e.g. "bom-omep"
-  produced_product_id: string          // FK → Product.id — the finished good this BOM builds
-  consumed_raw_material_ids: string[]  // FKs → RawMaterial.id — inputs required to build the product
+  id: number                           // Postgres integer PK
+  produced_product_id: number          // FK → Product.id — the finished good this BOM builds
+  consumed_raw_material_ids: number[]  // FKs → RawMaterial.id — inputs required to build the product
 }
 ```
 
@@ -180,7 +180,7 @@ Response: `RawMaterial[]`
 ```ts
 // A raw material is a purchasable input consumed by a BOM to produce a finished good.
 interface RawMaterial {
-  id: string    // slug, e.g. "rm-mag-stearate" (rm = raw material)
+  id: number    // Postgres integer PK
   sku: string   // human-facing SKU code, e.g. "RM-MAG-STEARATE"
 }
 ```
@@ -197,7 +197,7 @@ Response: `Supplier[]`
 
 ```ts
 interface Supplier {
-  id: string    // slug, e.g. "jost-chemical"
+  id: number    // Postgres integer PK
   name: string  // display name, e.g. "Jost Chemical"
 }
 ```
@@ -215,9 +215,9 @@ Response: `Substitution[]`
 ```ts
 // A pre-analyzed "this raw material can replace that one" mapping used by substitution proposals.
 interface Substitution {
-  id: string                    // slug, e.g. "sub-soy-to-sunflower-lecithin"
-  from_raw_material_id: string  // FK → RawMaterial.id — the material being replaced
-  to_raw_material_id: string    // FK → RawMaterial.id — the functionally equivalent replacement
+  id: number                    // Postgres integer PK
+  from_raw_material_id: number  // FK → RawMaterial.id — the material being replaced
+  to_raw_material_id: number    // FK → RawMaterial.id — the functionally equivalent replacement
   reason: string                // short rationale: why the swap works (allergen, compliance, cost, etc.)
 }
 ```
@@ -230,14 +230,14 @@ Suggested questions for a given proposal, pre-seeded from the AI analysis.
 Query params:
 | name | type | required | notes |
 |---|---|---|---|
-| `proposal_id` | string | yes | matches `Proposal.id` |
+| `proposal_id` | number | yes | matches `Proposal.id` |
 
 Response: `AgnesSuggestedQuestion[]`
 
 ```ts
 // A "canned" question the UI shows as a chip above Agnes's chat input to help the user start.
 interface AgnesSuggestedQuestion {
-  id: string        // slug unique per proposal, e.g. "q1"
+  id: number        // Postgres integer PK
   question: string  // the question text to display, e.g. "Why Jost Chemical specifically?"
 }
 ```
@@ -249,7 +249,7 @@ Request body: `AgnesAskRequest`
 
 ```ts
 interface AgnesAskRequest {
-  proposal_id: string       // FK → Proposal.id — scopes Agnes's answer to this proposal's context
+  proposal_id: number       // FK → Proposal.id — scopes Agnes's answer to this proposal's context
   message: string           // the user's free-form question
   history?: AgnesMessage[]  // prior turns of the conversation, so follow-ups stay coherent
 }
@@ -263,10 +263,10 @@ interface AgnesAskResponse {
 }
 
 interface AgnesMessage {
-  role: 'user' | 'assistant'     // who sent the message
-  content: string                // the main answer text shown in the chat bubble
-  reasoning_steps?: string[]     // ordered bullet trail of how the AI arrived at the answer (shown collapsed by default)
-  cited_evidence_indices?: number[] // 0-based indices into Proposal.evidence — lets UI jump back to the cited source
+  role: 'user' | 'assistant'        // who sent the message
+  content: string                   // the main answer text shown in the chat bubble
+  reasoning_steps?: string[] | null // ordered bullet trail of how the AI arrived at the answer (shown collapsed by default)
+  cited_evidence_indices?: number[] | null // 0-based indices into Proposal.evidence — lets UI jump back to the cited source
 }
 ```
 
@@ -347,7 +347,7 @@ Every new endpoint follows the same five-step recipe:
 
 ## Conventions
 
-- **IDs are strings.** Backend may use UUIDs or slugs — never raw ints. Fixture IDs use `rm_<n>`, `co_<n>`, etc. DB-sourced rows are namespaced with `_db` (`rm_db_<n>`).
+- **IDs are integers.** Plain Postgres `PRIMARY KEY` values emitted as JSON numbers. Never string slugs.
 - **Nullability is explicit.** Optional fields are `?: T | null`, not `T | undefined`. Pydantic `Optional[T] = None` is the intended mirror.
 - **Dates are ISO-8601 strings** (none yet — flag if added).
 - **Schema changes: backend-first.** Edit the Pydantic model, restart uvicorn, the frontend re-runs `yarn gen:types` and commits `lib/types.generated.ts`. Ping the other team if the change is breaking.
@@ -356,7 +356,7 @@ Every new endpoint follows the same five-step recipe:
 
 ## Resolved decisions
 
-1. **ID scheme** — string slugs. Fixtures use `rm_<n>`; DB rows use `_db` infix.
+1. **ID scheme** — plain Postgres integer PKs, emitted as JSON numbers.
 2. **Error envelope** — FastAPI default `{ "detail": "..." }`. No custom wrapper.
 3. **Pagination** — none. Data volume doesn't require it for the hackathon.
 4. **Auth** — none. No headers required.

@@ -11,11 +11,11 @@ import type { RawMaterial } from "@/lib/types"
 export default async function DictionaryRawMaterialsPage() {
   const rawMaterials = await getRawMaterials()
 
-  function supplierCount(rmId: string) {
+  function supplierCount(rmId: number) {
     return SUPPLIER_RAW_MATERIALS.filter((srm) => srm.raw_material_id === rmId).length
   }
 
-  function productCount(rmId: string) {
+  function productCount(rmId: number) {
     return BOMS.filter((b) => b.consumed_raw_material_ids.includes(rmId)).length
   }
 

@@ -6,8 +6,6 @@ Next.js app consuming the FastAPI backend in `../backend`. Contract: `knowledge/
 
 Use `GET /raw-materials` as the reference pattern when adding new endpoints — see `knowledge/api-contract.md` for the five-step recipe.
 
-> **Backend TODO:** drop the legacy `/ingredients` endpoint and its `Ingredient` schema. The frontend no longer consumes them; running `yarn gen:types` against the current backend will still regenerate `Ingredient` into `lib/types.generated.ts` until the backend removes it.
-
 ## Type generation flow
 
 REST types are generated from the backend's live `/openapi.json` via

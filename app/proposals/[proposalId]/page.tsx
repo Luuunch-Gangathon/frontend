@@ -17,10 +17,11 @@ export default async function ProposalPage({
   params: Promise<{ proposalId: string }>
 }) {
   const { proposalId } = await params
+  const numericProposalId = parseInt(proposalId, 10)
 
   let proposal
   try {
-    proposal = await getProposal(proposalId)
+    proposal = await getProposal(numericProposalId)
   } catch {
     notFound()
   }
@@ -40,7 +41,7 @@ export default async function ProposalPage({
   const validSuppliers = currentSuppliers.filter((s): s is NonNullable<typeof s> => s != null)
 
   const sortedProposals = allProposals
-  const currentIdx = sortedProposals.findIndex((o) => o.id === proposalId)
+  const currentIdx = sortedProposals.findIndex((o) => o.id === numericProposalId)
   const isLast = currentIdx === sortedProposals.length - 1
   const nextHref = isLast ? "/" : `/proposals/${sortedProposals[currentIdx + 1].id}`
   const nextLabel = isLast ? "Back to proposals" : "Next proposal"
@@ -195,7 +196,7 @@ export default async function ProposalPage({
         </Link>
       </div>
 
-      <AskAgnesDrawer proposalId={proposalId} proposalHeadline={proposal.headline} />
+      <AskAgnesDrawer proposalId={numericProposalId} proposalHeadline={proposal.headline} />
     </AppShell>
   )
 }

@@ -49,9 +49,9 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-function qs(params: Record<string, string | undefined>): string {
+function qs(params: Record<string, string | number | undefined>): string {
   const sp = new URLSearchParams();
-  for (const [k, v] of Object.entries(params)) if (v != null && v !== '') sp.set(k, v);
+  for (const [k, v] of Object.entries(params)) if (v != null && v !== '') sp.set(k, String(v));
   const s = sp.toString();
   return s ? `?${s}` : '';
 }
@@ -62,7 +62,7 @@ export function getProposals(): Promise<Proposal[]> {
   return req<Proposal[]>('/proposals');
 }
 
-export function getProposal(id: string): Promise<Proposal> {
+export function getProposal(id: number): Promise<Proposal> {
   return req<Proposal>(`/proposals/${id}`);
 }
 
@@ -72,17 +72,17 @@ export function getCompanies(): Promise<Company[]> {
   return req<Company[]>('/companies');
 }
 
-export function getCompany(id: string): Promise<Company> {
+export function getCompany(id: number): Promise<Company> {
   return req<Company>(`/companies/${id}`);
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 
-export function getProducts(params: { company_id?: string } = {}): Promise<Product[]> {
+export function getProducts(params: { company_id?: number } = {}): Promise<Product[]> {
   return req<Product[]>(`/products${qs(params)}`);
 }
 
-export function getProduct(id: string): Promise<Product> {
+export function getProduct(id: number): Promise<Product> {
   return req<Product>(`/products/${id}`);
 }
 
@@ -92,7 +92,7 @@ export function getRawMaterials(): Promise<RawMaterial[]> {
   return req<RawMaterial[]>('/raw-materials');
 }
 
-export function getRawMaterial(id: string): Promise<RawMaterial> {
+export function getRawMaterial(id: number): Promise<RawMaterial> {
   return req<RawMaterial>(`/raw-materials/${id}`);
 }
 
@@ -102,7 +102,7 @@ export function getSuppliers(): Promise<Supplier[]> {
   return req<Supplier[]>('/suppliers');
 }
 
-export function getSupplier(id: string): Promise<Supplier> {
+export function getSupplier(id: number): Promise<Supplier> {
   return req<Supplier>(`/suppliers/${id}`);
 }
 
@@ -114,7 +114,7 @@ export function getSubstitutions(): Promise<Substitution[]> {
 
 // ─── BOM ──────────────────────────────────────────────────────────────────────
 
-export function getBom(productId: string): Promise<BOM> {
+export function getBom(productId: number): Promise<BOM> {
   return req<BOM>(`/products/${productId}/bom`);
 }
 
@@ -128,7 +128,7 @@ export function getBom(productId: string): Promise<BOM> {
 
 // ─── Agnes ────────────────────────────────────────────────────────────────────
 
-export function getAgnesSuggestions(proposalId: string): Promise<AgnesSuggestedQuestion[]> {
+export function getAgnesSuggestions(proposalId: number): Promise<AgnesSuggestedQuestion[]> {
   return req<AgnesSuggestedQuestion[]>(`/agnes/suggestions?proposal_id=${proposalId}`);
 }
 

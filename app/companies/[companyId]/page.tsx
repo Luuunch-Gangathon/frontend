@@ -20,34 +20,35 @@ export default async function CompanyPage({
   params: Promise<{ companyId: string }>
 }) {
   const { companyId } = await params
+  const numericCompanyId = parseInt(companyId, 10)
 
   let company
   try {
-    company = await getCompany(companyId)
+    company = await getCompany(numericCompanyId)
   } catch {
     notFound()
   }
 
-  const products = await getProducts({ company_id: companyId })
+  const products = await getProducts({ company_id: numericCompanyId })
 
-  const rawMaterialIds = new Set<string>()
+  const rawMaterialIds = new Set<number>()
   for (const p of products) {
     for (const rm of getRawMaterialsForProduct(p.id)) {
       rawMaterialIds.add(rm.id)
     }
   }
 
-  const supplierIds = new Set<string>()
+  const supplierIds = new Set<number>()
   for (const rmId of rawMaterialIds) {
     for (const s of getSuppliersForRawMaterial(rmId)) {
       supplierIds.add(s.id)
     }
   }
 
-  const sharedCompanyIds = new Set<string>()
+  const sharedCompanyIds = new Set<number>()
   let sharedRawMaterialCount = 0
   for (const rmId of rawMaterialIds) {
-    const others = getCompaniesUsingRawMaterial(rmId).filter((c) => c.id !== companyId)
+    const others = getCompaniesUsingRawMaterial(rmId).filter((c) => c.id !== numericCompanyId)
     if (others.length > 0) {
       sharedRawMaterialCount++
       others.forEach((c) => sharedCompanyIds.add(c.id))
