@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { getProposal, getProposals, getCompany, getSupplier, getRawMaterial } from "@/lib/api"
+import { getProposal, getProposals, getCompany, getSupplier, getRawMaterial, getDecision } from "@/lib/api"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
 import { Section } from "@/components/blocks/section"
@@ -10,6 +10,7 @@ import { DataTable } from "@/components/blocks/data-table"
 import { EvidenceTrail } from "@/components/blocks/evidence-trail"
 import { ComplianceChecklist } from "@/components/blocks/compliance-checklist"
 import { AskAgnesDrawer } from "@/components/blocks/ask-agnes-drawer"
+import { DecisionPanel } from "@/components/blocks/decision-panel"
 
 export default async function ProposalPage({
   params,
@@ -26,7 +27,7 @@ export default async function ProposalPage({
     notFound()
   }
 
-  const [rawMaterial, allProposals, companies, currentSuppliers] = await Promise.all([
+  const [rawMaterial, allProposals, companies, currentSuppliers, existingDecision] = await Promise.all([
     getRawMaterial(proposal.raw_material_id).catch(() => null),
     getProposals(),
     Promise.all(
@@ -35,6 +36,7 @@ export default async function ProposalPage({
     Promise.all(
       proposal.current_suppliers.map((id) => getSupplier(id).catch(() => null))
     ),
+    getDecision(numericProposalId).catch(() => null),
   ])
 
   const validCompanies = companies.filter((c): c is NonNullable<typeof c> => c != null)
@@ -186,6 +188,10 @@ export default async function ProposalPage({
         <h2 className="text-lg font-semibold mb-4">Evidence</h2>
         <EvidenceTrail items={proposal.evidence} />
       </section>
+
+      <Section title="Your decision">
+        <DecisionPanel proposalId={numericProposalId} initialDecision={existingDecision} />
+      </Section>
 
       <div className="mt-16 flex justify-end border-t border-border pt-6">
         <Link

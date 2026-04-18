@@ -83,6 +83,23 @@ export interface Proposal {
   compliance_requirements: ComplianceRequirement[]
 }
 
+// ─── Decisions ────────────────────────────────────────────────────────────────
+
+export type DecisionStatus = 'accepted' | 'rejected'
+
+export interface Decision {
+  id: number
+  proposal_id: number
+  status: DecisionStatus
+  reason?: string | null
+  created_at: string
+}
+
+export interface CreateDecisionRequest {
+  status: DecisionStatus
+  reason?: string
+}
+
 // ─── Agnes ────────────────────────────────────────────────────────────────────
 
 export interface AgnesMessage {

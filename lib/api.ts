@@ -8,6 +8,8 @@ import type {
   BOM,
   Substitution,
   Proposal,
+  Decision,
+  CreateDecisionRequest,
   AgnesSuggestedQuestion,
   AgnesAskRequest,
   AgnesAskResponse,
@@ -139,6 +141,19 @@ export function getBom(productId: number): Promise<BOM> {
 // export function applyTuning(body: TuningRequest): Promise<TuningResponse> {
 //   return req<TuningResponse>('/tuning/allocations', { method: 'POST', body: JSON.stringify(body) });
 // }
+
+// ─── Decisions ────────────────────────────────────────────────────────────────
+
+export function getDecision(proposalId: number): Promise<Decision> {
+  return reqLive<Decision>(`/proposals/${proposalId}/decision`);
+}
+
+export function createDecision(proposalId: number, body: CreateDecisionRequest): Promise<Decision> {
+  return reqLive<Decision>(`/proposals/${proposalId}/decision`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
 
 // ─── Agnes ────────────────────────────────────────────────────────────────────
 
