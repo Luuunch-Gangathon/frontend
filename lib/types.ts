@@ -100,11 +100,12 @@ export interface AgnesSuggestedQuestion {
 export interface AgnesAskRequest {
   proposal_id: number
   message: string
-  history?: AgnesMessage[]
+  session_id?: string | null
 }
 
 export interface AgnesAskResponse {
   reply: AgnesMessage
+  session_id: string
 }
 
 // ─── Tuning (v2: deferred post-hackathon) ────────────────────────────────────

@@ -24,6 +24,20 @@ export class ApiError extends Error {
   }
 }
 
+async function reqLive<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    cache: 'no-store',
+    ...init,
+    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+  });
+  if (!res.ok) {
+    let body: unknown = null;
+    try { body = await res.json(); } catch { body = await res.text().catch(() => null); }
+    throw new ApiError(`${res.status} ${res.statusText} — ${path}`, res.status, body);
+  }
+  return (await res.json()) as T;
+}
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   if (USE_MOCKS) return mockResponse<T>(path, init);
 
@@ -129,11 +143,11 @@ export function getBom(productId: number): Promise<BOM> {
 // ─── Agnes ────────────────────────────────────────────────────────────────────
 
 export function getAgnesSuggestions(proposalId: number): Promise<AgnesSuggestedQuestion[]> {
-  return req<AgnesSuggestedQuestion[]>(`/agnes/suggestions?proposal_id=${proposalId}`);
+  return reqLive<AgnesSuggestedQuestion[]>(`/agnes/suggestions?proposal_id=${proposalId}`);
 }
 
 export function askAgnes(body: AgnesAskRequest): Promise<AgnesAskResponse> {
-  return req<AgnesAskResponse>('/agnes/ask', {
+  return reqLive<AgnesAskResponse>('/agnes/ask', {
     method: 'POST',
     body: JSON.stringify(body),
   });

@@ -21,6 +21,7 @@ export function AskAgnesDrawer({ proposalId, proposalHeadline }: AskAgnesDrawerP
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [suggestions, setSuggestions] = useState<AgnesSuggestedQuestion[]>([])
+  const [sessionId, setSessionId] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -48,6 +49,7 @@ export function AskAgnesDrawer({ proposalId, proposalHeadline }: AskAgnesDrawerP
     setIsOpen(false)
     setMessages([INTRO])
     setInput('')
+    setSessionId(null)
   }
 
   const sendMessage = useCallback(async (text: string) => {
@@ -58,7 +60,8 @@ export function AskAgnesDrawer({ proposalId, proposalHeadline }: AskAgnesDrawerP
     setInput('')
     setIsLoading(true)
     try {
-      const res = await askAgnes({ proposal_id: proposalId, message: trimmed, history: messages })
+      const res = await askAgnes({ proposal_id: proposalId, message: trimmed, session_id: sessionId })
+      setSessionId(res.session_id)
       setMessages((prev) => [...prev, res.reply])
     } catch {
       setMessages((prev) => [...prev, {
@@ -68,7 +71,7 @@ export function AskAgnesDrawer({ proposalId, proposalHeadline }: AskAgnesDrawerP
     } finally {
       setIsLoading(false)
     }
-  }, [isLoading, messages, proposalId])
+  }, [isLoading, proposalId, sessionId])
 
   const showSuggestions = suggestions.length > 0 && messages.length <= 1
 
