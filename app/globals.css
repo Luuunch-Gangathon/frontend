@@ -137,3 +137,80 @@
     transform: translateX(400%);
   }
 }
+
+@keyframes kenBurns {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.08) translate(-1%, -1%); }
+  100% { transform: scale(1.04) translate(1%, 0.5%); }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sheen {
+  from { background-position: -200% center; }
+  to { background-position: 200% center; }
+}
+
+@keyframes orbDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.97); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes gridDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes fadeOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes macbookZoom {
+  from { transform: scale(1); }
+  to { transform: scale(5); }
+}
+
+@keyframes floatCard {
+  0%, 100% { translate: 0 0px; }
+  50% { translate: 0 -8px; }
+}
+
+@keyframes floatScreenshot {
+  0%, 100% { translate: 0 0px; }
+  50% { translate: 0 -16px; }
+}
+
+@keyframes flowDot {
+  0% { opacity: 0; offset-distance: 0%; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; offset-distance: 100%; }
+}
+
+@keyframes drawLine {
+  from { stroke-dashoffset: 300; }
+  to { stroke-dashoffset: 0; }
+}
+
+@layer utilities {
+  .anim-rise {
+    animation: riseIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .anim-rise-delay-1 { animation-delay: 80ms; }
+  .anim-rise-delay-2 { animation-delay: 160ms; }
+  .anim-rise-delay-3 { animation-delay: 280ms; }
+  .anim-rise-delay-4 { animation-delay: 440ms; }
+  .anim-rise-delay-5 { animation-delay: 640ms; }
+  .anim-rise-delay-6 { animation-delay: 880ms; }
+}
