@@ -58,7 +58,7 @@ export function ChatPanel({
   }, [messages, isLoading])
 
   return (
-    <div className="flex flex-col h-[calc(100vh-10rem)]">
+    <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto space-y-6 pb-4">
         {messages.map((msg, i) => (
           <MessageGroup

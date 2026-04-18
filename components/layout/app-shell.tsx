@@ -10,8 +10,8 @@ interface AppShellProps {
 
 export function AppShell({ children, className }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <div className="h-screen overflow-hidden flex flex-col bg-background text-foreground">
+      <header className="shrink-0 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 z-10">
         <div className="mx-auto flex h-14 max-w-7xl items-center px-6">
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <span className="text-base font-semibold tracking-tight">Spherecast</span>
@@ -20,7 +20,7 @@ export function AppShell({ children, className }: AppShellProps) {
           <NavTabs />
         </div>
       </header>
-      <main className={cn("mx-auto max-w-7xl px-6 py-8", className)}>
+      <main className={cn("flex-1 overflow-hidden mx-auto w-full max-w-7xl px-6 py-8", className)}>
         {children}
       </main>
     </div>

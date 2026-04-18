@@ -126,8 +126,8 @@ export function ChatWorkspace() {
   }
 
   return (
-    <div>
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+    <div className="h-full flex flex-col">
+      <div className="mb-6 shrink-0 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Ask Agnes</h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -141,8 +141,8 @@ export function ChatWorkspace() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(420px,520px)_1fr]">
-        <div className="order-2 lg:order-1">
+      <div className="flex-1 min-h-0 grid gap-6 lg:grid-cols-[minmax(420px,520px)_1fr]">
+        <div className="order-2 lg:order-1 min-h-0">
           <ContextSidebar
             key={selectedProduct.id}
             aggregated={aggregated}
@@ -152,7 +152,7 @@ export function ChatWorkspace() {
             productId={selectedProduct.id}
           />
         </div>
-        <div className="order-1 lg:order-2">
+        <div className="order-1 lg:order-2 min-h-0">
           <ChatPanel
             messages={messages}
             isLoading={isLoading}

@@ -132,7 +132,7 @@ export function ContextSidebar({ aggregated, activeTab, onTabChange, hasAnyToolC
   const supplierIdMap = new Map(browseSuppliers.map((s) => [s.name, s.id]))
 
   return (
-    <div className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] flex flex-col rounded-xl border border-border bg-card overflow-hidden">
+    <div className="flex flex-col h-full rounded-xl border border-border bg-card overflow-hidden">
       {/* Tab bar */}
       <div className="flex shrink-0 border-b border-border">
         {TABS.map((tab) => {
