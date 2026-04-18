@@ -1,9 +1,24 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown, { type Components } from 'react-markdown'
 import { ToolCallBlock } from './tool-call-block'
+import { SkuChip } from './sku-chip'
+import { remarkSku } from '@/lib/remark-sku'
 import type { ChatMessage, ToolCall } from '@/lib/types'
+
+const MARKDOWN_COMPONENTS: Components = {
+  a({ href, children, ...rest }) {
+    if (href?.startsWith('#sku-')) {
+      return <SkuChip sku={href.slice(5)} />
+    }
+    return (
+      <a href={href} {...rest}>
+        {children}
+      </a>
+    )
+  },
+}
 
 export type { ChatMessage }
 
@@ -170,7 +185,9 @@ function MessageGroup({ message, sessionId, decisions, onDecision }: MessageGrou
         )}
         {message.content && (
           <div className="rounded-2xl rounded-tl-sm bg-muted px-4 py-2.5 text-sm leading-relaxed">
-            <ReactMarkdown>{message.content}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkSku]} components={MARKDOWN_COMPONENTS}>
+              {message.content}
+            </ReactMarkdown>
           </div>
         )}
       </div>

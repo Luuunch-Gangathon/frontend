@@ -4,6 +4,7 @@ import {
   getRawMaterialsForSupplier,
   getCompaniesForSupplier,
   getSuppliersForRawMaterial,
+  type RawMaterial,
 } from "@/lib/demo-data"
 import { AppShell } from "@/components/layout/app-shell"
 import { Breadcrumb } from "@/components/layout/breadcrumb"
@@ -11,7 +12,7 @@ import { StatsStrip } from "@/components/blocks/stats-strip"
 import { Section } from "@/components/blocks/section"
 import { DataTable } from "@/components/blocks/data-table"
 import { CompanyBadge } from "@/components/blocks/company-badge"
-import type { RawMaterial, Company } from "@/lib/types"
+import type { Company } from "@/lib/types"
 
 export default async function SupplierPage({
   params,
