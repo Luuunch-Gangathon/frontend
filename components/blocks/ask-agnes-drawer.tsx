@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { cn } from '@/lib/utils'
 import { askAgnes, getAgnesSuggestions } from '@/lib/api'
 import type { AgnesMessage, AgnesSuggestedQuestion } from '@/lib/types'
@@ -21,6 +22,7 @@ export function AskAgnesDrawer({ proposalId, proposalHeadline }: AskAgnesDrawerP
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [suggestions, setSuggestions] = useState<AgnesSuggestedQuestion[]>([])
+  const [sessionId, setSessionId] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -46,7 +48,6 @@ export function AskAgnesDrawer({ proposalId, proposalHeadline }: AskAgnesDrawerP
 
   const handleClose = () => {
     setIsOpen(false)
-    setMessages([INTRO])
     setInput('')
   }
 
@@ -58,7 +59,8 @@ export function AskAgnesDrawer({ proposalId, proposalHeadline }: AskAgnesDrawerP
     setInput('')
     setIsLoading(true)
     try {
-      const res = await askAgnes({ proposal_id: proposalId, message: trimmed, history: messages })
+      const res = await askAgnes({ proposal_id: proposalId, message: trimmed, session_id: sessionId })
+      setSessionId(res.session_id)
       setMessages((prev) => [...prev, res.reply])
     } catch {
       setMessages((prev) => [...prev, {
@@ -67,8 +69,9 @@ export function AskAgnesDrawer({ proposalId, proposalHeadline }: AskAgnesDrawerP
       }])
     } finally {
       setIsLoading(false)
+      inputRef.current?.focus()
     }
-  }, [isLoading, messages, proposalId])
+  }, [isLoading, proposalId, sessionId])
 
   const showSuggestions = suggestions.length > 0 && messages.length <= 1
 
@@ -188,8 +191,8 @@ function MessageBubble({ message }: { message: AgnesMessage }) {
         A
       </span>
       <div className="flex-1 min-w-0 space-y-2">
-        <div className="rounded-2xl rounded-tl-sm bg-muted px-4 py-2.5 text-sm">
-          {message.content}
+        <div className="rounded-2xl rounded-tl-sm bg-muted px-4 py-2.5 text-sm prose prose-sm prose-neutral dark:prose-invert max-w-none">
+          <ReactMarkdown>{message.content}</ReactMarkdown>
         </div>
         {message.reasoning_steps && message.reasoning_steps.length > 0 && (
           <details className="text-xs ml-1">

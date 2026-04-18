@@ -109,19 +109,21 @@ export async function mockResponse<T>(path: string, init?: RequestInit): Promise
 
   if (p === '/agnes/ask' && init?.method === 'POST') {
     await new Promise((r) => setTimeout(r, 480)); // total ~600ms with leading delay
-    const body = JSON.parse(init.body as string) as { proposal_id: number; message: string };
+    const body = JSON.parse(init.body as string) as { proposal_id: number; message: string; session_id?: string | null };
+    const session_id = body.session_id ?? `mock-session-${body.proposal_id}-${Date.now()}`;
     const canned = AGNES_CANNED_RESPONSES[body.proposal_id] ?? [];
     const lower = body.message.toLowerCase();
     const match = canned.find((entry) =>
       entry.keywords.some((k) => lower.includes(k.toLowerCase()))
     );
-    if (match) return { reply: match.reply } as unknown as T;
+    if (match) return { reply: match.reply, session_id } as unknown as T;
     return {
       reply: {
         role: 'assistant',
         content: "I don't have specific data on that yet — try one of the suggested questions above, where my analysis is most complete.",
         reasoning_steps: ['No keyword match found in canned response library for this proposal.'],
       },
+      session_id,
     } as unknown as T;
   }
 
