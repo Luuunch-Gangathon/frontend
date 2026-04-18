@@ -1,5 +1,4 @@
-import { API_BASE_URL, USE_MOCKS } from '@/lib/env';
-import { mockResponse } from '@/lib/mocks';
+import { API_BASE_URL } from '@/lib/env';
 import type {
   Company,
   Product,
@@ -10,6 +9,9 @@ import type {
   AgnesAskResponse,
   DecisionCreate,
   Decision,
+  ComplianceResult,
+  SubstituteCandidate,
+  SubstituteProposal,
 } from '@/lib/types';
 
 export class ApiError extends Error {
@@ -24,8 +26,6 @@ export class ApiError extends Error {
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  if (USE_MOCKS) return mockResponse<T>(path, init);
-
   const res = await fetch(`${API_BASE_URL}${path}`, {
     cache: 'no-store',
     ...init,
@@ -97,6 +97,10 @@ export function getRawMaterialCompanies(id: number): Promise<Company[]> {
   return req<Company[]>(`/raw-materials/${id}/companies`);
 }
 
+export function getRawMaterialSubstitutes(id: number): Promise<SubstituteCandidate[]> {
+  return req<SubstituteCandidate[]>(`/raw-materials/${id}/substitutes`);
+}
+
 // ─── Suppliers ────────────────────────────────────────────────────────────────
 
 export function getSuppliers(): Promise<Supplier[]> {
@@ -111,6 +115,33 @@ export function getSupplier(id: number): Promise<Supplier> {
 
 export function getBom(productId: number): Promise<BOM> {
   return req<BOM>(`/products/${productId}/bom`);
+}
+
+// ─── Compliance ───────────────────────────────────────────────────────────────
+
+export function getCompliance(productId: number): Promise<ComplianceResult[]> {
+  return req<ComplianceResult[]>(`/compliance/${productId}`);
+}
+
+export function getComplianceForMaterial(
+  productId: number,
+  rawMaterialId: number,
+): Promise<ComplianceResult> {
+  return req<ComplianceResult>(`/compliance/${productId}/${rawMaterialId}`);
+}
+
+export function scoreSubstituteCandidates(
+  productId: number,
+  originalRmId: number,
+  candidateRmIds: number[],
+): Promise<SubstituteProposal[]> {
+  return req<SubstituteProposal[]>(
+    `/compliance/${productId}/${originalRmId}/candidates`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ candidate_ids: candidateRmIds }),
+    },
+  );
 }
 
 // ─── Agnes ────────────────────────────────────────────────────────────────────

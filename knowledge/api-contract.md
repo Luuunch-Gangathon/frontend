@@ -254,7 +254,7 @@ Response: `Decision[]`
 
 Deferred until Phase 1 is fully shipped. Adds a write path (manual per-supplier quantity allocations) and a recomputation step that returns refreshed proposals based on the new allocation distribution.
 
-**Frontend code is kept in the repo, commented out** — see `app/tuning/page.tsx`, `lib/types.ts`, `lib/api.ts`, `lib/mocks.ts`, and `lib/demo-data.ts` for the `SupplierAllocation` / `TuningRequest` / `TuningResponse` blocks marked `v2:`. Uncomment + restore the `Tuning` nav entry in `components/layout/nav-tabs.tsx` to revive.
+**Frontend code is kept in the repo, commented out** — see `app/tuning/page.tsx`, `lib/types.ts`, `lib/api.ts`, and `lib/demo-data.ts` for the `SupplierAllocation` / `TuningRequest` / `TuningResponse` blocks marked `v2:`. Uncomment + restore the `Tuning` nav entry in `components/layout/nav-tabs.tsx` to revive.
 
 ### Endpoint summary
 
@@ -317,7 +317,7 @@ Every new endpoint follows the same five-step recipe:
    ```bash
    yarn gen:types           # pulls types from /openapi.json
    ```
-   Add a named re-export in `frontend/lib/types.ts` (`export type Foo = S['Foo']`), a typed function in `frontend/lib/api.ts` modeled on `getRawMaterials`, and a mock case in `frontend/lib/mocks.ts` keyed on the path.
+   Add a named re-export in `frontend/lib/types.ts` (`export type Foo = S['Foo']`) and a typed function in `frontend/lib/api.ts` modeled on `getRawMaterials`.
 
 ---
 

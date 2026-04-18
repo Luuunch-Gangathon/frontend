@@ -31,6 +31,25 @@ export interface BOM {
   consumed_raw_material_ids: number[]
 }
 
+// ─── Compliance ───────────────────────────────────────────────────────────────
+
+export interface SubstituteProposal {
+  id: number
+  score: number
+  reasoning: string
+}
+
+export interface ComplianceResult {
+  raw_material_id: number
+  proposal: SubstituteProposal | null
+}
+
+export interface SubstituteCandidate {
+  id: number
+  sku: string
+  similarity_score: number
+}
+
 // ─── Tool results ─────────────────────────────────────────────────────────────
 
 export interface SearchHit {

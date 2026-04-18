@@ -141,13 +141,15 @@ export function ChatWorkspace() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(340px,400px)_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(420px,520px)_1fr]">
         <div className="order-2 lg:order-1">
           <ContextSidebar
+            key={selectedProduct.id}
             aggregated={aggregated}
             activeTab={activeTab}
             onTabChange={setActiveTab}
             hasAnyToolCalls={hasAnyToolCalls}
+            productId={selectedProduct.id}
           />
         </div>
         <div className="order-1 lg:order-2">

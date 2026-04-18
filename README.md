@@ -16,5 +16,3 @@ yarn dev                               # http://localhost:3000
 ```
 
 `yarn gen:types` wraps `openapi-typescript` against `http://localhost:8000/openapi.json` and overwrites `lib/types.generated.ts`. Re-run whenever `backend/app/schemas/` changes.
-
-Set `NEXT_PUBLIC_USE_MOCKS=1` in `.env.local` to develop against `lib/mocks.ts` without a live backend.
