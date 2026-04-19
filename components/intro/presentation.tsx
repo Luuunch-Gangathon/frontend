@@ -7,7 +7,7 @@ import { Team } from './slides/team'
 import { BrandReveal } from './slides/brand-reveal'
 import { Problem } from './slides/problem'
 import { Requirements } from './slides/requirements'
-import { Benchmarks } from './slides/benchmarks'
+import { Cost } from './slides/cost'
 import { Architecture } from './slides/architecture'
 import { FeatureTeaser } from './slides/feature-teaser'
 import { MacbookReveal } from './slides/macbook-reveal'
@@ -86,7 +86,7 @@ export function Presentation() {
       </SlideShell>
 
       <SlideShell active={current === 4}>
-        <Benchmarks active={current === 4} onExit={exit} />
+        <Cost active={current === 4} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 5}>
