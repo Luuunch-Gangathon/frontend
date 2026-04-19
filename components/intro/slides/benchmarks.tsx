@@ -57,7 +57,7 @@ export function Benchmarks({ active }: BenchmarksProps) {
             transition: 'opacity 0.6s ease 0ms, transform 0.6s ease 0ms',
           }}
         >
-          <p className="text-[12px] uppercase tracking-[0.22em] text-white/65 font-mono mb-3">
+          <p className="text-[clamp(0.85rem,1.6vw,1.15rem)] uppercase tracking-[0.22em] text-white/65 font-mono mb-3">
             Benchmarks
           </p>
           <h2

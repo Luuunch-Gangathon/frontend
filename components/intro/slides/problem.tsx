@@ -52,7 +52,7 @@ export function Problem({ active }: ProblemProps) {
       {/* Left: headline stack */}
       <div className="relative z-10 flex-1 flex flex-col justify-center gap-8 pl-[10%] max-w-[55%]">
         <p
-          className="text-[12px] uppercase tracking-[0.2em] text-white/65 font-mono"
+          className="text-[clamp(0.85rem,1.6vw,1.15rem)] uppercase tracking-[0.2em] text-white/65 font-mono"
           style={{
             opacity: active ? 1 : 0,
             transform: active ? 'translateY(0)' : 'translateY(16px)',

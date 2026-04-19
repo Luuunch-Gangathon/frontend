@@ -90,7 +90,6 @@ export function Architecture({ active }: ArchitectureProps) {
             stroke="oklch(1 0 0 / 0.25)"
             strokeWidth={1}
             fill="none"
-            markerEnd="url(#arr)"
             strokeDasharray={300}
             strokeDashoffset={active ? 0 : 300}
             style={{ transition: 'stroke-dashoffset 0.4s ease 500ms' }}
@@ -139,57 +138,31 @@ export function Architecture({ active }: ArchitectureProps) {
             style={{ opacity: active ? 1 : 0, transition: 'opacity 0.4s ease 400ms' }}
           />
 
-          {/* Flow dots */}
+          {/* Flow dots — each bounces back and forth via keyPoints 0→1→0 */}
           {dotsActive && (
             <>
-              <circle r="2.5" fill="oklch(0.65 0.12 264)" opacity="0.8">
-                <animateMotion
-                  dur="2.2s"
-                  repeatCount="indefinite"
-                  begin="0s"
-                  path={`M ${FE_RIGHT} ${FE_CY} L ${AGNES_CX - AGNES_R} ${AGNES_CY}`}
-                />
-              </circle>
-              <circle r="2.5" fill="oklch(0.65 0.12 264)" opacity="0.7">
-                <animateMotion
-                  dur="2.2s"
-                  repeatCount="indefinite"
-                  begin="0.7s"
-                  path={`M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[0]}`}
-                />
-              </circle>
-              <circle r="2.5" fill="oklch(0.65 0.12 264)" opacity="0.7">
-                <animateMotion
-                  dur="2.2s"
-                  repeatCount="indefinite"
-                  begin="1.4s"
-                  path={`M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[2]}`}
-                />
-              </circle>
-              <circle r="2.5" fill="oklch(0.65 0.12 264)" opacity="0.7">
-                <animateMotion
-                  dur="2.2s"
-                  repeatCount="indefinite"
-                  begin="2.1s"
-                  path={`M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[1]}`}
-                />
-              </circle>
-              <circle r="2.5" fill="oklch(0.65 0.12 264)" opacity="0.7">
-                <animateMotion
-                  dur="2.2s"
-                  repeatCount="indefinite"
-                  begin="2.8s"
-                  path={`M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[3]}`}
-                />
-              </circle>
-              <circle r="2.5" fill="oklch(0.65 0.12 264)" opacity="0.7">
-                <animateMotion
-                  dur="2.2s"
-                  repeatCount="indefinite"
-                  begin="3.5s"
-                  path={`M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[4]}`}
-                />
-              </circle>
+              {[
+                { path: `M ${FE_RIGHT} ${FE_CY} L ${AGNES_CX - AGNES_R} ${AGNES_CY}`, begin: '0s' },
+                { path: `M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[0]}`, begin: '0.5s' },
+                { path: `M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[1]}`, begin: '1s' },
+                { path: `M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[2]}`, begin: '1.5s' },
+                { path: `M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[3]}`, begin: '2s' },
+                { path: `M ${AGNES_CX + AGNES_R} ${AGNES_CY} L ${TOOL_X} ${TOOL_CY[4]}`, begin: '2.5s' },
+                { path: `M ${AGNES_CX} ${AGNES_CY + AGNES_R} L ${OAI_CX} ${OAI_CY - 20}`, begin: '3s' },
+                { path: `M ${AGNES_CX} ${AGNES_CY + AGNES_R} L ${MEM_CX} ${MEM_CY - 20}`, begin: '3.5s' },
+              ].map((d, i) => (
+                <circle key={i} r="2.5" fill="oklch(0.65 0.12 264)" opacity="0.75">
+                  <animateMotion
+                    dur="4s"
+                    repeatCount="indefinite"
+                    begin={d.begin}
+                    path={d.path}
+                    keyPoints="0;1;0"
+                    keyTimes="0;0.5;1"
+                    calcMode="linear"
+                  />
+                </circle>
+              ))}
             </>
           )}
         </svg>
@@ -208,7 +181,7 @@ export function Architecture({ active }: ArchitectureProps) {
             transition: 'opacity 0.5s ease 500ms, transform 0.5s ease 500ms',
           }}
         >
-          <span className="font-mono text-sm text-white/80">FrontEnd</span>
+          <span className="font-mono text-sm text-white/80">Client</span>
         </div>
 
         {/* Agnes node */}

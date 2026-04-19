@@ -18,6 +18,13 @@ export function AppShell({ children, className }: AppShellProps) {
             <span className="hidden text-xs text-muted-foreground sm:block">Supply Chain Co-Pilot</span>
           </Link>
           <NavTabs />
+          <Link
+            href="/intro"
+            className="ml-auto inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            <span aria-hidden>▶</span>
+            Presentation
+          </Link>
         </div>
       </header>
       <main className={cn("mx-auto max-w-7xl px-6 py-8", className)}>

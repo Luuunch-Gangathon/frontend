@@ -6,12 +6,13 @@ import { SlideShell } from './slide-shell'
 import { Team } from './slides/team'
 import { BrandReveal } from './slides/brand-reveal'
 import { Problem } from './slides/problem'
+import { Requirements } from './slides/requirements'
 import { Benchmarks } from './slides/benchmarks'
 import { Architecture } from './slides/architecture'
 import { FeatureTeaser } from './slides/feature-teaser'
 import { MacbookReveal } from './slides/macbook-reveal'
 
-const SLIDE_COUNT = 7
+const SLIDE_COUNT = 8
 
 export function Presentation() {
   const router = useRouter()
@@ -69,11 +70,11 @@ export function Presentation() {
       onClick={next}
     >
       <SlideShell active={current === 0}>
-        <Team active={current === 0} onExit={exit} />
+        <BrandReveal active={current === 0} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 1}>
-        <BrandReveal active={current === 1} onExit={exit} />
+        <Team active={current === 1} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 2}>
@@ -81,19 +82,23 @@ export function Presentation() {
       </SlideShell>
 
       <SlideShell active={current === 3}>
-        <Benchmarks active={current === 3} onExit={exit} />
+        <Requirements active={current === 3} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 4}>
-        <Architecture active={current === 4} onExit={exit} />
+        <Benchmarks active={current === 4} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 5}>
-        <FeatureTeaser active={current === 5} />
+        <Architecture active={current === 5} onExit={exit} />
       </SlideShell>
 
       <SlideShell active={current === 6}>
-        <MacbookReveal active={current === 6} zooming={isZooming} onLaunch={zoomToApp} />
+        <FeatureTeaser active={current === 6} />
+      </SlideShell>
+
+      <SlideShell active={current === 7}>
+        <MacbookReveal active={current === 7} zooming={isZooming} onLaunch={zoomToApp} />
       </SlideShell>
 
       {/* Progress bars — hidden while zooming */}
