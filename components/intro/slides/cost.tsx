@@ -16,7 +16,7 @@ const METRICS = [
   {
     target: 4.95,
     duration: 1500,
-    label: 'Scraping',
+    label: 'Search Engine',
     caption: 'Embedded the supplier, compliance & substitution data we scraped on top.',
     glyph: '\u25CE',
     delay: 350,
